@@ -17,31 +17,31 @@ EXECUTABLE_NAME = main
 CXX_STANDARD = c++17
 CXX_WARNINGS = -Wall -Wextra -Wpedantic
 CXX = g++
-CXXFLAGS = ${CXX_WARNINGS} -std=${CXX_STANDARD}
+CXXFLAGS = $(CXX_WARNINGS) -std=$(CXX_STANDARD)
 LDFLAGS = 
 
-ifeq (${DEBUG}, 1) 
+ifeq ($(DEBUG), 1) 
 	CXXFLAGS += -g -O0
 else
 	CXXFLAGS += -O3
 endif
 
-COMPILER_CALL = ${CXX} ${CXXFLAGS}
+COMPILER_CALL = $(CXX) $(CXXFLAGS)
 
 
 build: my_lib.o main.o
-	${COMPILER_CALL} main.o my_lib.o -o ${EXECUTABLE_NAME}
+	$(COMPILER_CALL) main.o my_lib.o -o $(EXECUTABLE_NAME)
 
 main.o:
-	${COMPILER_CALL} main.cc -c
+	$(COMPILER_CALL) main.cc -c
 
 my_lib.o:
-	${COMPILER_CALL} my_lib.cc -c
+	$(COMPILER_CALL) my_lib.cc -c
 
 run:
-	./${EXECUTABLE_NAME}
+	./$(EXECUTABLE_NAME)
 
 
 clean:
 	rm -f *.o
-	rm -f ${EXECUTABLE_NAME}
+	rm -f $(EXECUTABLE_NAME)
