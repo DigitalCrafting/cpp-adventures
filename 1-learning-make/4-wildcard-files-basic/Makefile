@@ -28,15 +28,10 @@ endif
 
 COMPILER_CALL = ${CXX} ${CXXFLAGS}
 
+CXX_OBJECTS = my_lib.o main.o
 
-build: my_lib.o main.o
-	${COMPILER_CALL} main.o my_lib.o -o ${EXECUTABLE_NAME}
-
-main.o:
-	${COMPILER_CALL} main.cc -c
-
-my_lib.o:
-	${COMPILER_CALL} my_lib.cc -c
+build: ${CXX_OBJECTS}
+	${COMPILER_CALL} ${CXX_OBJECTS} -o ${EXECUTABLE_NAME}
 
 run:
 	./${EXECUTABLE_NAME}
@@ -45,3 +40,13 @@ run:
 clean:
 	rm -f *.o
 	rm -f ${EXECUTABLE_NAME}
+
+
+##############
+## PATTERNS ##
+##############
+# $@: the file name of the target
+# $<: the name of the first ependency
+# $^: the names of all prerequisites
+%.o: %.cc
+	${COMPILER_CALL} -c $< -o $@
