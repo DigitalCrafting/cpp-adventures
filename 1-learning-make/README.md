@@ -1,5 +1,7 @@
 # Cpp Makefile Tutorial
 
+This directory contains code from [Master Make and Makefile for C/C++ Projects](https://www.udemy.com/course/make-and-makefile-for-cc-projects-2022-edition/) on Udemy.
+
 ## GCC/Clang Compiler Steps
 
 ### Compilation (Assembling)
