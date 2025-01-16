@@ -37,3 +37,4 @@
 # IDEA
 **/*.idea
 **/*.iml
+**/cmake-build-*
