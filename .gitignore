@@ -39,3 +39,4 @@
 **/*.iml
 **/cmake-build-*
 **/external/*
+**/docs/html
