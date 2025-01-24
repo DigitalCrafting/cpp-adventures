@@ -38,5 +38,7 @@
 **/*.idea
 **/*.iml
 **/cmake-build-*
-**/external/*
+**/external/**/
 **/docs/html
+
+**/imgui.ini

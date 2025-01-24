@@ -1,3 +1,6 @@
 [submodule "2-learning-c-make/7-git-submodule/external/json"]
 	path = 2-learning-c-make/7-git-submodule/external/json
 	url = git@github.com:nlohmann/json.git
+[submodule "4-imgui/1-file-manager/external/imgui"]
+	path = 4-imgui/1-file-manager/external/imgui
+	url = git@github.com:ocornut/imgui.git
