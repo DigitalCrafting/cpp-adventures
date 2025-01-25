@@ -11,6 +11,7 @@ target_link_libraries(${EXECUTABLE_NAME} PRIVATE
         glfw
         glad
         imgui
+        implot
 )
 
 if (ENABLE_WARNINGS)

@@ -7,6 +7,7 @@
 #include "GLFW/glfw3.h"
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
+#include "../../external/implot/implot.h"
 
 // GLFW error callback
 void glfw_error_callback(int error, const char* description) {
@@ -59,11 +60,16 @@ int main() {
     // Set up ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
+    ImPlot::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
 
     // Initialize ImGui for GLFW and OpenGL3
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 460");
+
+    int   bar_data[11] = {1,2,3,4,5,6,7,8,9,10,11};
+    float x_data[1000] = {};
+    float y_data[1000] = {};
 
     // Main loop
     while (!glfwWindowShouldClose(window)) {
@@ -77,6 +83,11 @@ int main() {
 
         // Example ImGui window
         ImGui::Begin("Hello, ImGui!"); // Create a window
+        if (ImPlot::BeginPlot("My Plot")) {
+            ImPlot::PlotBars("My Bar Plot", bar_data, 11);
+            ImPlot::PlotLine("My Line Plot", x_data, y_data, 1000);
+            ImPlot::EndPlot();
+        }
         ImGui::Text("This is a minimal ImGui example."); // Text inside the window
         ImGui::End(); // Close the window
 
@@ -93,6 +104,7 @@ int main() {
     // Cleanup
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
+    ImPlot::DestroyContext();
     ImGui::DestroyContext();
     glfwDestroyWindow(window);
     glfwTerminate();

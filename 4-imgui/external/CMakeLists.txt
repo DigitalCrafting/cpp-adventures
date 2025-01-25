@@ -28,3 +28,24 @@ target_include_directories(imgui PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/imgui
         ${CMAKE_CURRENT_SOURCE_DIR}/imgui/backends
 )
+
+set(IMPLOT_SOURCES
+        "./implot/implot.cpp"
+        "./implot/implot_items.cpp"
+)
+
+set(IMPLOT_HEADERS
+        "./implot/implot.h"
+        "./implot/implot_internal.h"
+)
+
+add_library(implot STATIC
+    ${IMPLOT_SOURCES}
+    ${IMPLOT_HEADERS}
+)
+
+target_include_directories(implot PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/implot
+    ${CMAKE_CURRENT_SOURCE_DIR}/imgui
+    ${CMAKE_CURRENT_SOURCE_DIR}/imgui/backends
+)
