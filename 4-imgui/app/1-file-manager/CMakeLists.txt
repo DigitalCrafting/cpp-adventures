@@ -1,5 +1,5 @@
-set(EXE_SOURCES "main.cc")
-set(EXE_INCLUDES "../..")
+set(EXE_SOURCES "main.cc" "render.cpp")
+set(EXE_INCLUDES "../.." "render.hpp")
 
 set(LOCAL_EXE_NAME FileManager)
 
