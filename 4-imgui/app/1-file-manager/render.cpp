@@ -1,8 +1,5 @@
-#include <iostream>
-
-#include <fmt/format.h>
 #include <imgui.h>
-#include <implot.h>
+#include <iostream>
 
 #include "render.hpp"
 
@@ -19,8 +16,41 @@ void WindowClass::Draw(std::string_view label)
 
     ImGui::Begin(label.data(), nullptr, window_flags);
 
+    DrawMenu();
+    ImGui::Separator();
+    DrawContent();
+    ImGui::Separator();
+    DrawActions();
+    ImGui::Separator();
+    DrawFilter();
+
     ImGui::End();
 }
+
+void WindowClass::DrawMenu() {
+    if (ImGui::Button("Go Up")) {
+        if (currentPath.has_parent_path()) {
+            currentPath = currentPath.parent_path();
+        }
+    }
+
+    ImGui::SameLine();
+
+    ImGui::Text("Current directory: %s", currentPath.string().c_str());
+}
+
+void WindowClass::DrawContent() {
+    ImGui::Text("DrawContent");
+}
+
+void WindowClass::DrawActions() {
+    ImGui::Text("DrawActions");
+}
+
+void WindowClass::DrawFilter() {
+    ImGui::Text("DrawFilter");
+}
+
 
 void render(WindowClass &window_obj)
 {
