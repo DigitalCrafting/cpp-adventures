@@ -1,5 +1,6 @@
 #include <imgui.h>
 #include <iostream>
+#include <cstring>
 
 #include "render.hpp"
 
@@ -40,7 +41,26 @@ void WindowClass::DrawMenu() {
 }
 
 void WindowClass::DrawContent() {
-    ImGui::Text("DrawContent");
+    for (const auto &entry : fs::directory_iterator(currentPath)) {
+        const auto is_selected = entry.path() == selectedEntry;
+        const auto is_directory = entry.is_directory();
+        const auto is_file = entry.is_regular_file();
+        auto entry_name = entry.path().filename().string();
+
+        if (is_directory) {
+            entry_name = "[D] " + entry_name;
+        } else if(is_file) {
+            entry_name = "[F] " + entry_name;
+        }
+
+        if(ImGui::Selectable(entry_name.c_str(), is_selected)) {
+            if (is_directory) {
+                currentPath /= entry.path().filename();
+            }
+
+            selectedEntry = entry.path();
+        }
+    }
 }
 
 void WindowClass::DrawActions() {
@@ -48,7 +68,28 @@ void WindowClass::DrawActions() {
 }
 
 void WindowClass::DrawFilter() {
-    ImGui::Text("DrawFilter");
+    static char extension_filter[16] = {"\0"};
+
+    ImGui::Text("Filter by extension");
+    ImGui::SameLine();
+    ImGui::InputText("###inFilter", extension_filter, sizeof(extension_filter));
+
+    if (std::strlen(extension_filter) == 0) {
+        return;
+    }
+
+    auto filtered_file_count = (unsigned int){0};
+    for (const auto &entry : fs::directory_iterator(currentPath)) {
+        if (!fs::is_regular_file(entry)) {
+            continue;
+        }
+
+        if (entry.path().extension().string() == extension_filter) {
+            ++filtered_file_count;
+        }
+    }
+
+    ImGui::Text("Number of files: %u", filtered_file_count);
 }
 
 
