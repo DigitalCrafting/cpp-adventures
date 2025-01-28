@@ -1,6 +1,5 @@
 #include <iostream>
 
-#include "my_lib.h"
 #include "config.hpp"
 #include "imgui.h"
 #include "glad/gl.h"
@@ -17,8 +16,6 @@ void glfw_error_callback(int error, const char* description) {
 int main() {
     std::cout << project_name << '\n';
     std::cout << project_version << '\n';
-
-    print_hello_world();
 
     // Set GLFW error callback
     glfwSetErrorCallback(glfw_error_callback);

@@ -1,12 +1,14 @@
 set(EXE_SOURCES "main.cc" "render.cpp")
-set(EXE_INCLUDES "../.." "render.hpp")
+set(EXE_INCLUDES "../.." "render.hpp" "${CMAKE_BINARY_DIR}/configured/include")
 
 set(LOCAL_EXE_NAME FileManager)
 
 add_executable(${LOCAL_EXE_NAME} ${EXE_SOURCES})
 target_include_directories(${LOCAL_EXE_NAME} PUBLIC ${EXE_INCLUDES})
 target_link_libraries(${LOCAL_EXE_NAME} PRIVATE
-        ${LIBRARY_NAME}
+        fmt::fmt
+        spdlog::spdlog
+        cxxopts::cxxopts
         implot
 )
 
