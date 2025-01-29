@@ -24,7 +24,7 @@ private:
     void DrawPlot();
 
     Function functionNameMapping(std::string_view function_name);
-    double evaluateFunction(const Function function, const double x);
+    double evaluateFunction(Function function, double x);
 
 public:
     std::set<Function> selectedFunctions;
