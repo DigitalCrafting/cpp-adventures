@@ -16,8 +16,45 @@ void WindowClass::Draw(std::string_view label)
 
     ImGui::Begin(label.data(), nullptr, window_flags);
 
+    DrawSelection();
+    DrawPlot();
 
     ImGui::End();
+}
+
+void WindowClass::DrawSelection() {
+    for (const auto func_name : functionNames) {
+        const auto curr_function = functionNameMapping(func_name);
+        auto selected = selectedFunctions.count(curr_function) == 1;
+
+        if (ImGui::Checkbox(func_name.data(), &selected)) {
+            if (selected) {
+                selectedFunctions.insert(curr_function);
+            } else {
+                selectedFunctions.erase(curr_function);
+            }
+        }
+    }
+}
+
+void WindowClass::DrawPlot() {
+
+}
+
+WindowClass::Function WindowClass::functionNameMapping(std::string_view function_name) {
+    if (std::string_view{"sin(x)"} == function_name) {
+        return WindowClass::Function::SIN;
+    }
+
+    if (std::string_view{"cos(x)"} == function_name) {
+        return WindowClass::Function::COS;
+    }
+
+    return WindowClass::Function::NONE;
+}
+
+double WindowClass::evaluateFunction(const WindowClass::Function function, const double x) {
+
 }
 
 void render(WindowClass &window_obj)
