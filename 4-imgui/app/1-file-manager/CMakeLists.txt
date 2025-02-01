@@ -1,7 +1,7 @@
 set(EXE_SOURCES "main.cc" "render.cpp")
 set(EXE_INCLUDES "../.." "render.hpp" "${CMAKE_BINARY_DIR}/configured/include")
 
-set(LOCAL_EXE_NAME FileManager)
+set(LOCAL_EXE_NAME 1_FileManager)
 
 add_executable(${LOCAL_EXE_NAME} ${EXE_SOURCES})
 target_include_directories(${LOCAL_EXE_NAME} PUBLIC ${EXE_INCLUDES})
