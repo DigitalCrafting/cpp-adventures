@@ -6,31 +6,39 @@
 
 namespace fs = std::filesystem;
 
-class WindowClass
-{
-public:
-    WindowClass(): currentPath(fs::current_path()), selectedEntry(fs::path{}) {};
-    void Draw(std::string_view label);
+namespace FileManager {
+    class WindowClass {
+    public:
+        WindowClass() : currentPath(fs::current_path()), selectedEntry(fs::path{}) {};
 
-private:
-    void DrawMenu();
-    void DrawContent();
-    void DrawActions();
-    void DrawFilter();
+        void Draw(std::string_view label);
 
-    void openFileWithDefaultEditor();
-    void renameFilePopup();
-    void deleteFilePopup();
+    private:
+        void DrawMenu();
 
-    bool renameFile(const fs::path &old_path, const fs::path &new_path);
-    bool deleteFile(const fs::path &path);
+        void DrawContent();
 
-private:
-    fs::path currentPath;
-    fs::path selectedEntry;
+        void DrawActions();
 
-    bool renameDialogOpen = false;
-    bool deleteDialogOpen = false;
-};
+        void DrawFilter();
 
-void render(WindowClass &window_obj);
+        void openFileWithDefaultEditor();
+
+        void renameFilePopup();
+
+        void deleteFilePopup();
+
+        bool renameFile(const fs::path &old_path, const fs::path &new_path);
+
+        bool deleteFile(const fs::path &path);
+
+    private:
+        fs::path currentPath;
+        fs::path selectedEntry;
+
+        bool renameDialogOpen = false;
+        bool deleteDialogOpen = false;
+    };
+
+    void render(WindowClass &window_obj);
+}
