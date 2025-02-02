@@ -1,10 +1,9 @@
 #include <imgui.h>
 #include <valarray>
-#include <implot.h>
 #include <filesystem>
+#include <fstream>
 
 #include "render.hpp"
-#include "fmt/format.h"
 
 namespace fs = std::filesystem;
 
@@ -119,6 +118,7 @@ namespace ImGuiTextEditor {
         ImGui::BeginChild("LineNumbers", lineNumberSize, false, ImGuiWindowFlags_NoScrollbar);
         const auto line_count = std::count(textBuffer, textBuffer + bufferSize, '\n') + 1;
 
+        /* Smaller vertical spacing, so that line numbers actually correspond to lines in InputTextMultiline */
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4.0F, 0.5F));
 
         for (auto i = 1; i <= line_count; ++i) {
@@ -134,13 +134,39 @@ namespace ImGuiTextEditor {
         ImGui::EndChild();
     }
 
-    void WindowClass::DrawInfo() {}
+    void WindowClass::DrawInfo() {
+        if (currentFileName.size() == 0) {
+            ImGui::Text("No File Opened!");
+            return;
+        }
 
-    void WindowClass::SaveToFile(std::string_view fileName) {}
+        const auto file_extension = GetFileExtension(currentFileName);
+        ImGui::Text("Opened file %s | File extension %s", currentFileName.data(), file_extension.data());
+    }
 
-    void WindowClass::LoadFromFile(std::string_view fileName) {}
+    void WindowClass::SaveToFile(std::string_view fileName) {
+        auto out = std::ofstream(fileName.data());
+        if (out.is_open()) {
+            out << textBuffer;
+            out.close();
+        }
+    }
 
-    std::string WindowClass::GetFileExtension(std::string_view fileName) {}
+    void WindowClass::LoadFromFile(std::string_view fileName) {
+        auto in = std::ifstream(fileName.data());
+
+        if (in.is_open()) {
+            auto buffer = std::stringstream{};
+            buffer << in.rdbuf();
+            std::memcpy(textBuffer, buffer.str().data(), bufferSize);
+            in.close();
+        }
+    }
+
+    std::string WindowClass::GetFileExtension(std::string_view fileName) {
+        const auto file_path = fs::path(fileName);
+        return file_path.extension().string();
+    }
 
     void render(WindowClass &window_obj) {
         window_obj.Draw("Text editor");
