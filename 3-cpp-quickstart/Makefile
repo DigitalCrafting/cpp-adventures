@@ -48,7 +48,7 @@ COMPILER_CALL = $(CXX) $(CXXFLAGS)
 CXX_SOURCES = $(wildcard $(SOURCE_DIR)/*.cc)
 CXX_OBJECTS = $(patsubst $(SOURCE_DIR)/%.cc, $(BUILD_DIR)/%.o, $(CXX_SOURCES))
 
-all: create build
+all: create build run
 
 create:
 	@mkdir -p $(BUILD_DIR)
