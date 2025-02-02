@@ -108,7 +108,31 @@ namespace ImGuiTextEditor {
         }
     }
 
-    void WindowClass::DrawContent() {}
+    void WindowClass::DrawContent() {
+        static constexpr auto inputTextSize = ImVec2(1200.0F, 625.0F);
+        static constexpr auto lineNumberSize = ImVec2(30.0F, inputTextSize.y);
+        static constexpr auto inputTextFlags =
+                ImGuiInputTextFlags_AllowTabInput | ImGuiInputTextFlags_NoHorizontalScroll;
+
+        const float lineHeight = ImGui::GetTextLineHeightWithSpacing();
+
+        ImGui::BeginChild("LineNumbers", lineNumberSize, false, ImGuiWindowFlags_NoScrollbar);
+        const auto line_count = std::count(textBuffer, textBuffer + bufferSize, '\n') + 1;
+
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4.0F, 0.5F));
+
+        for (auto i = 1; i <= line_count; ++i) {
+            ImGui::Text("%d", i);
+        }
+
+        ImGui::PopStyleVar();
+        ImGui::EndChild();
+        ImGui::SameLine();
+
+        ImGui::BeginChild("Editor", inputTextSize, false, ImGuiWindowFlags_NoScrollbar);
+        ImGui::InputTextMultiline("###inputField", textBuffer, bufferSize, inputTextSize, inputTextFlags);
+        ImGui::EndChild();
+    }
 
     void WindowClass::DrawInfo() {}
 
