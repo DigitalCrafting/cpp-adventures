@@ -1,4 +1,5 @@
 #include <imgui.h>
+#include <misc/cpp/imgui_stdlib.h>
 #include <valarray>
 
 #include "render.hpp"
@@ -16,11 +17,30 @@ namespace ImGuiDiffViewer {
 
         ImGui::Begin(label.data(), nullptr, window_flags);
 
+        DrawSelection();
+        DrawDiffView();
+        DrawStats();
+
         ImGui::End();
     }
 
     void WindowClass::DrawSelection() {
+        ImGui::InputText("Left", &filePath1);
+        ImGui::SameLine();
+        if (ImGui::Button("Save###Left"))
+            SaveFileContent(filePath1, fileContent1);
 
+        ImGui::InputText("Right", &filePath2);
+        ImGui::SameLine();
+        if (ImGui::Button("Save###Right"))
+            SaveFileContent(filePath2, fileContent2);
+
+        if (ImGui::Button("Compare")) {
+            fileContent1 = LoadFileContent(filePath1);
+            fileContent2 = LoadFileContent(filePath2);
+
+            CreateDiff();
+        }
     }
 
     void WindowClass::DrawDiffView() {
@@ -31,7 +51,9 @@ namespace ImGuiDiffViewer {
 
     }
 
-    WindowClass::FileContent WindowClass::LoadFileContent(std::string_view file_path) {}
+    WindowClass::FileContent WindowClass::LoadFileContent(std::string_view file_path) {
+        return FileContent({});
+    }
 
     void WindowClass::SaveFileContent(std::string_view file_path,
                                       ImGuiDiffViewer::WindowClass::FileContent &fileContent) {

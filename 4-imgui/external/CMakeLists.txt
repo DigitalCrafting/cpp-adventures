@@ -7,6 +7,7 @@ set(IMGUI_SOURCES
         "./imgui/imgui_widgets.cpp"
         "./imgui/backends/imgui_impl_glfw.cpp"
         "./imgui/backends/imgui_impl_opengl3.cpp"
+        "./imgui/misc/cpp/imgui_stdlib.cpp"
 )
 set(IMGUI_HEADERS
         "./imgui/imgui.h"
@@ -17,6 +18,7 @@ set(IMGUI_HEADERS
         "./imgui/backends/imgui_impl_glfw.h"
         "./imgui/backends/imgui_impl_opengl3.h"
         "./imgui/backends/imgui_impl_opengl3_loader.h"
+        "./imgui/misc/cpp/imgui_stdlib.h"
 )
 
 add_library(imgui STATIC
