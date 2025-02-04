@@ -19,6 +19,29 @@ namespace ImGuiDiffViewer {
         ImGui::End();
     }
 
+    void WindowClass::DrawSelection() {
+
+    }
+
+    void WindowClass::DrawDiffView() {
+
+    }
+
+    void WindowClass::DrawStats() {
+
+    }
+
+    WindowClass::FileContent WindowClass::LoadFileContent(std::string_view file_path) {}
+
+    void WindowClass::SaveFileContent(std::string_view file_path,
+                                      ImGuiDiffViewer::WindowClass::FileContent &fileContent) {
+
+    }
+
+    void WindowClass::CreateDiff() {
+
+    }
+
     void render(WindowClass &window_obj) {
         window_obj.Draw("Diff Viewer");
     }
