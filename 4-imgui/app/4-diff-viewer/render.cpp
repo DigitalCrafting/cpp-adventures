@@ -1,6 +1,7 @@
 #include <imgui.h>
 #include <misc/cpp/imgui_stdlib.h>
 #include <fmt/format.h>
+#include <fstream>
 
 #include "render.hpp"
 
@@ -69,8 +70,8 @@ namespace ImGuiDiffViewer {
 
         if (ImGui::BeginChild("Swap", swap_size, true)) {
             for (std::size_t i = 0; i < diffResult1.size(); ++i) {
-                const auto left_label = fmt::format("<###{}", i);
-                const auto right_label = fmt::format(">###{}", i);
+                const auto left_label = fmt::format("<##{}", i);
+                const auto right_label = fmt::format(">##{}", i);
 
                 if (!diffResult1.empty() || !diffResult2.empty()) {
                     if (ImGui::Button(left_label.data(), button_size)) {
@@ -115,20 +116,63 @@ namespace ImGuiDiffViewer {
     }
 
     void WindowClass::DrawStats() {
+        auto diff_lines_count = std::size_t {0};
+        for (const auto &line : diffResult1) {
+            if (!line.empty()) {
+                ++diff_lines_count;
+            }
+        }
 
+        ImGui::SetCursorPosY(ImGui::GetWindowHeight() - 20.0F);
+        ImGui::Text("Diff lines count: %u", diff_lines_count);
     }
 
     WindowClass::FileContent WindowClass::LoadFileContent(std::string_view file_path) {
-        return FileContent({});
+        auto content = FileContent {};
+        auto in = std::ifstream {file_path.data()};
+
+        if (in.is_open()) {
+            auto line = std::string();
+            while (std::getline(in, line)) {
+                content.push_back(line);
+            }
+        }
+
+        in.close();
+
+        return content;
     }
 
     void WindowClass::SaveFileContent(std::string_view file_path,
                                       ImGuiDiffViewer::WindowClass::FileContent &fileContent) {
+        auto out = std::fstream {file_path.data()};
+        if (out.is_open()) {
+            for (const auto &line : fileContent) {
+                out << line << '\n';
+            }
+        }
 
+        out.close();
     }
 
     void WindowClass::CreateDiff() {
+        diffResult1.clear();
+        diffResult2.clear();
 
+        const auto max_line_number = std::max(fileContent1.size(), fileContent2.size());
+
+        for (std::size_t i = 0; i < max_line_number; ++i) {
+            const auto line1 = i < fileContent1.size() ? fileContent1[i] : "EMPTY";
+            const auto line2 = i < fileContent2.size() ? fileContent2[i] : "EMPTY";
+
+            if (line1 != line2) {
+                diffResult1.push_back(line1);
+                diffResult2.push_back(line2);
+            } else {
+                diffResult1.push_back("");
+                diffResult2.push_back("");
+            }
+        }
     }
 
     void render(WindowClass &window_obj) {
