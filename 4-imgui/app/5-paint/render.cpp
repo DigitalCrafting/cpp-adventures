@@ -1,4 +1,3 @@
-#include <imgui.h>
 
 #include "render.hpp"
 
@@ -17,6 +16,24 @@ namespace ImGuiPaint {
 
         ImGui::End();
     }
+
+    void WindowClass::DrawMenu() {}
+
+    void WindowClass::DrawCanvas() {}
+
+    void WindowClass::DrawColorButtons() {}
+
+    void WindowClass::DrawSizeSettings() {}
+
+    void WindowClass::DrawSavePopup() {}
+
+    void WindowClass::DrawLoadPopup() {}
+
+    void WindowClass::SaveToImageFile(std::string_view filename) {}
+
+    void WindowClass::LoadFromImageFile(std::string_view filename) {}
+
+    void WindowClass::ClearCanvas() {}
 
     void render(WindowClass &window_obj) {
         window_obj.Draw("Paint");
