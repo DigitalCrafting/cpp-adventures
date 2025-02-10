@@ -1,4 +1,5 @@
 
+#include <fstream>
 #include "render.hpp"
 
 namespace ImGuiPaint {
@@ -173,13 +174,95 @@ namespace ImGuiPaint {
         ImGui::PopItemWidth();
     }
 
-    void WindowClass::DrawSavePopup() {}
+    void WindowClass::DrawSavePopup() {
+        const auto esc_pressed = ImGui::IsKeyPressed(ImGuiKey_Escape);
 
-    void WindowClass::DrawLoadPopup() {}
+        ImGui::SetNextWindowSize(popUpSize);
+        ImGui::SetNextWindowPos(popUpPos);
 
-    void WindowClass::SaveToImageFile(std::string_view filename) {}
+        if (ImGui::BeginPopupModal(SAVE_POPUP_NAME.data(), nullptr, popUpFlags)) {
+            ImGui::InputText("Filename", filenameBuffer, sizeof(filenameBuffer));
 
-    void WindowClass::LoadFromImageFile(std::string_view filename) {}
+            if (ImGui::Button("Save", popUpButtonSize)) {
+                SaveToImageFile(filenameBuffer);
+                ImGui::CloseCurrentPopup();
+            }
+
+            ImGui::SameLine();
+
+            if (ImGui::Button("Cancel", popUpButtonSize) || esc_pressed) {
+                ImGui::CloseCurrentPopup();
+            }
+
+            ImGui::EndPopup();
+        }
+    }
+
+    void WindowClass::DrawLoadPopup() {
+        const auto esc_pressed = ImGui::IsKeyPressed(ImGuiKey_Escape);
+
+        ImGui::SetNextWindowSize(popUpSize);
+        ImGui::SetNextWindowPos(popUpPos);
+
+        if (ImGui::BeginPopupModal(LOAD_POPUP_NAME.data(), nullptr, popUpFlags)) {
+            ImGui::InputText("Filename", filenameBuffer, sizeof(filenameBuffer));
+
+            if (ImGui::Button("Load", popUpButtonSize)) {
+                LoadFromImageFile(filenameBuffer);
+                ImGui::CloseCurrentPopup();
+            }
+
+            ImGui::SameLine();
+
+            if (ImGui::Button("Cancel", popUpButtonSize) || esc_pressed) {
+                ImGui::CloseCurrentPopup();
+            }
+
+            ImGui::EndPopup();
+        }
+    }
+
+    void WindowClass::SaveToImageFile(std::string_view filename) {
+        auto out = std::ofstream(filename.data(), std::ios::binary);
+
+        if (!out || !out.is_open())
+            return;
+
+        const auto point_count = points.size();
+        out.write(reinterpret_cast<const char*>(&point_count), sizeof (point_count));
+
+        for (const auto &[point, color, size] : points) {
+            out.write(reinterpret_cast<const char*>(&point), sizeof(point));
+            out.write(reinterpret_cast<const char*>(&color), sizeof(color));
+            out.write(reinterpret_cast<const char*>(&size), sizeof(size));
+        }
+
+        out.close();
+    }
+
+    void WindowClass::LoadFromImageFile(std::string_view filename) {
+        auto in = std::ifstream(filename.data(), std::ios::binary);
+
+        if (!in || !in.is_open())
+            return;
+
+        auto point_count = std::size_t {0};
+        in.read(reinterpret_cast<char*>(&point_count), sizeof(point_count));
+
+        for (std::size_t i = 0; i < point_count; ++i) {
+            auto point = ImVec2{};
+            auto color = ImColor{};
+            auto size = float{};
+
+            in.read(reinterpret_cast<char*>(&point), sizeof(point));
+            in.read(reinterpret_cast<char*>(&color), sizeof(color));
+            in.read(reinterpret_cast<char*>(&size), sizeof(size));
+
+            points.push_back(std::make_tuple(point, color, size));
+        }
+
+        in.close();
+    }
 
     void WindowClass::ClearCanvas() {
         points.clear();
