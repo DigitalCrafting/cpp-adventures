@@ -157,9 +157,72 @@ namespace ImGuiCalendar {
         ImGui::EndChild(); // calendar
     }
 
-    void WindowClass::DrawMeetingsList() {}
+    void WindowClass::DrawAddMeetingsWindow() {
+        static char meeting_name_buffer[128] = "...";
 
-    void WindowClass::DrawAddMeetingsWindow() {}
+        ImGui::SetNextWindowSize(meetingWindowSize);
+        ImGui::SetNextWindowPos(meetingWindowPos);
+
+        ImGui::Begin("##addMeeting", &addMeetingWindowOpen, meetingWindowFlags);
+
+        ImGui::Text("Add meeting on %d.%s.%d",
+            selectedDay,
+            monthNames[selectedMonth - 1].data(),
+            selectedYear
+        );
+
+        ImGui::InputText("Meeting Name",
+                         meeting_name_buffer,
+                         sizeof(meeting_name_buffer));
+
+        if (ImGui::Button("Save")) {
+            meetings[selectedDate].push_back(Meeting{meeting_name_buffer});
+            std::memset(meeting_name_buffer, 0, sizeof(meeting_name_buffer));
+            addMeetingWindowOpen = false;
+        }
+
+        ImGui::SameLine();
+        if (ImGui::Button("Cancel")) {
+            addMeetingWindowOpen = false;
+        }
+
+        ImGui::End(); // addMeeting
+    }
+
+    void WindowClass::DrawMeetingsList() {
+        if (!meetings.size()) {
+            ImGui::Text("No meetings at all.");
+            return;
+        }
+
+        ImGui::Text("Meetings on %d.%s.%d",
+            selectedDay,
+            monthNames[selectedMonth - 1].data(),
+            selectedYear
+        );
+
+        if (!meetings.contains(selectedDate)) {
+            ImGui::Text("No meetings for this day.");
+            return;
+        }
+
+        if (meetings[selectedDate].empty()) {
+            ImGui::Text("No meetings for this day.");
+            return;
+        }
+
+        for (const auto &meeting : meetings[selectedDate]) {
+            ImGui::BulletText("%s", meeting.name.data());
+
+            if (ImGui::IsItemClicked(ImGuiMouseButton_Left)) {
+                std::erase(meetings[selectedDate], meeting);
+                if (meetings[selectedDate].empty()) {
+                    meetings.erase(selectedDate);
+                }
+                return;
+            }
+        }
+    }
 
     void WindowClass::LoadMeetingsFromFile(std::string_view filename) {}
 
