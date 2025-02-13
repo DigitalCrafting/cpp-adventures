@@ -1,3 +1,5 @@
+#include <fstream>
+
 #include "render.hpp"
 #include "fmt/format.h"
 
@@ -234,9 +236,22 @@ namespace ImGuiCalendar {
         selectedYear = static_cast<int>(selectedDate.year());
     }
 
-    void WindowClass::Meeting::Serialize(std::ofstream &out) const {}
+    void WindowClass::Meeting::Serialize(std::ofstream &out) const {
+        const auto name_length = name.size();
+        out.write(reinterpret_cast<const char*>(&name_length), sizeof(name_length));
+        out.write(name.data(), static_cast<std::streamsize>(name.size()));
+    }
 
-    WindowClass::Meeting WindowClass::Meeting::Deserialize(std::ifstream &in) {}
+    WindowClass::Meeting WindowClass::Meeting::Deserialize(std::ifstream &in) {
+        auto meeting = WindowClass::Meeting{};
+        auto name_length = std::size_t{0};
+
+        in.read(reinterpret_cast<char*>(&name_length), sizeof(name_length));
+        meeting.name.resize(name_length);
+
+        in.read(meeting.name.data(), static_cast<std::streamsize>(name_length));
+        return meeting;
+    }
 
     void render(WindowClass &window_obj) {
         window_obj.Draw("Calendar");
