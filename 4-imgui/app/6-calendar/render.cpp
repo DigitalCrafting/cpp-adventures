@@ -226,9 +226,55 @@ namespace ImGuiCalendar {
         }
     }
 
-    void WindowClass::LoadMeetingsFromFile(std::string_view filename) {}
+    void WindowClass::LoadMeetingsFromFile(std::string_view filename) {
+        auto in = std::ifstream(filename.data(), std::ios::binary);
 
-    void WindowClass::SaveMeetingsToFile(std::string_view filename) {}
+        if (!in && !in.is_open()) {
+            return;
+        }
+
+        auto meeting_count = std::size_t {0};
+        in.read(reinterpret_cast<char*>(&meeting_count), sizeof(meeting_count));
+
+        for (std::size_t i = 0; i < meeting_count; ++i) {
+            auto date = std::chrono::year_month_day{};
+            in.read(reinterpret_cast<char*>(&date), sizeof(date));
+
+            auto meetings_count_on_date = std::size_t {0};
+            in.read(reinterpret_cast<char*>(&meetings_count_on_date), sizeof(meetings_count_on_date));
+
+            for (std::size_t m = 0; m < meetings_count_on_date; ++m) {
+                auto meeting = WindowClass::Meeting::Deserialize(in);
+                meetings[date].push_back(meeting);
+            }
+        }
+
+        in.close();
+    }
+
+    void WindowClass::SaveMeetingsToFile(std::string_view filename) {
+        auto out = std::ofstream(filename.data(), std::ios::binary);
+
+        if (!out || !out.is_open()) {
+            return;
+        }
+
+        const auto meeting_count = meetings.size();
+        out.write(reinterpret_cast<const char*>(&meeting_count), sizeof(meeting_count));
+
+        for (const auto &[date, meeting_vec]: meetings) {
+            out.write(reinterpret_cast<const char*>(&date), sizeof(date));
+
+            const auto meetings_count_on_date = meeting_vec.size();
+            out.write(reinterpret_cast<const char*>(&meetings_count_on_date), sizeof(meetings_count_on_date));
+
+            for (const auto &meeting : meeting_vec) {
+                meeting.Serialize(out);
+            }
+        }
+
+        out.close();
+    }
 
     void WindowClass::UpdateSelectedDateVariables() {
         selectedDay = static_cast<int>(selectedDate.day().operator unsigned int());
