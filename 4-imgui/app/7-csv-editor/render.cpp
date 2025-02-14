@@ -27,6 +27,12 @@ namespace ImGuiCsvEditor {
         ImGui::End();
     }
 
+    void WindowClass::DrawSizeButtons() {}
+
+    void WindowClass::DrawIoButtons() {}
+
+    void WindowClass::DrawTable() {}
+
     void WindowClass::DrawSavePopup() {
         static char saveFilenameBuffer[256] = "text.txt";
         const auto esc_pressed = ImGui::IsKeyPressed(ImGuiKey_Escape);
@@ -78,6 +84,13 @@ namespace ImGuiCsvEditor {
             ImGui::EndPopup();
         }
     }
+
+    void WindowClass::DrawValuePopup(const int row, const int col) {}
+
+    template<typename T>
+    void WindowClass::PlotCellValue(std::string_view formatter, const T value) {}
+
+    void WindowClass::SetPopupLayout() {}
 
     void WindowClass::SaveToCsvFile(std::string_view fileName) {
         auto out = std::ofstream(fileName.data());

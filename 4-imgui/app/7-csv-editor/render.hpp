@@ -4,6 +4,7 @@
 #include <string_view>
 #include <string>
 #include <cstring>
+#include <vector>
 
 namespace ImGuiCsvEditor {
     class WindowClass {
@@ -18,18 +19,33 @@ namespace ImGuiCsvEditor {
                 720.0F / 2.0F - popUpSize.y / 2.0F
         );
 
+        static constexpr auto maxNumRows = 30;
+        static constexpr auto maxNumCols = 8;
+
     public:
         void Draw(std::string_view label);
 
     private:
-        void DrawSavePopup();
+        void DrawSizeButtons();
+        void DrawIoButtons();
+        void DrawTable();
 
+        void DrawSavePopup();
         void DrawLoadPopup();
+        void DrawValuePopup(const int row, const int col);
 
         void SaveToCsvFile(std::string_view fileName);
-
         void LoadFromCsvFile(std::string_view fileName);
 
+        template <typename T>
+        void PlotCellValue(std::string_view formatter, const T value);
+        void SetPopupLayout();
+
+    private:
+        std::int32_t numCols;
+        std::int32_t numRows;
+        std::vector<std::vector<float>> data;
+        char filenameBuffer[256];
     };
 
     void render(WindowClass &window_obj);
