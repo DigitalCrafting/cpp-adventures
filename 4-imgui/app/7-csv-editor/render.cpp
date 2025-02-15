@@ -85,14 +85,14 @@ namespace ImGuiCsvEditor {
             for (auto row = num_rows_i32; row < numRows; ++row) {
                 data.push_back(std::vector<float>(numCols, 0.0F));
             }
-        } else if (user_dropped_cols) {
+        } else if (user_added_cols) {
             for (std::int32_t row = 0; row < numRows; ++row) {
                 const auto num_cols_i32 = static_cast<std::int32_t>(data[row].size());
                 for (auto col = num_cols_i32; col < numCols; ++col) {
                     data[row].push_back(0.0F);
                 }
             }
-        } else if (user_added_rows) {
+        } else if (user_dropped_rows) {
             for (auto row = num_rows_i32; row > numRows; --row) {
                 data.pop_back();
             }
