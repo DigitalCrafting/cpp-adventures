@@ -3,6 +3,8 @@
 #include <filesystem>
 #include <fstream>
 
+#include "fmt/format.h"
+
 #include "render.hpp"
 
 namespace fs = std::filesystem;
@@ -10,6 +12,7 @@ namespace fs = std::filesystem;
 namespace ImGuiCsvEditor {
     static constexpr std::string_view SAVE_POPUP_NAME = "Save File";
     static constexpr std::string_view LOAD_POPUP_NAME = "Load File";
+    static constexpr std::string_view VALUE_POPUP_NAME = "Change Value";
 
     void WindowClass::Draw(std::string_view label) {
         constexpr static auto window_flags =
@@ -63,7 +66,7 @@ namespace ImGuiCsvEditor {
 
         ImGui::Text("Num Cols: ");
         ImGui::SameLine();
-        if (ImGui::SliderInt("##numCols", &slider_value_cols, 0 , maxNumCols)) {
+        if (ImGui::SliderInt("##numCols", &slider_value_cols, 0, maxNumCols)) {
             user_added_cols = slider_value_cols > numCols;
             user_dropped_cols = slider_value_cols < numCols;
 
@@ -106,23 +109,79 @@ namespace ImGuiCsvEditor {
         }
     }
 
-    void WindowClass::DrawIoButtons() {}
+    void WindowClass::DrawIoButtons() {
+        if (ImGui::Button("Save")) {
+            ImGui::OpenPopup(SAVE_POPUP_NAME.data());
+        }
 
-    void WindowClass::DrawTable() {}
+        ImGui::SameLine();
+
+        if (ImGui::Button("Load")) {
+            ImGui::OpenPopup(LOAD_POPUP_NAME.data());
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Clear")) {
+            data.clear();
+            numRows = 0;
+            numCols = 0;
+        }
+
+        DrawSavePopup();
+        DrawLoadPopup();
+    }
+
+    void WindowClass::DrawTable() {
+        constexpr static auto table_flags = ImGuiTableFlags_BordersV | ImGuiTableFlags_BordersOuter;
+
+        static auto row_clicked = 0;
+        static auto col_clicked = 0;
+
+        if (numCols == 0) {
+            return;
+        }
+
+        ImGui::BeginTable("Table", numCols, table_flags);
+
+        for (std::int32_t col = 0; col < numCols; ++col) {
+            const auto col_name = fmt::format("{}", 'A' + col);
+            ImGui::TableSetupColumn(col_name.data(), ImGuiTableColumnFlags_WidthFixed, 1280.0F / static_cast<float>(numCols));
+        }
+
+        ImGui::TableNextRow(ImGuiTableRowFlags_Headers);
+        for (std::int32_t col = 0; col < numCols; ++col) {
+            PlotCellValue("%c", 'A' + col);
+        }
+
+        for (std::int32_t row = 0; row < numRows; ++row) {
+            for (std::int32_t col = 0; col < numCols; ++col) {
+                PlotCellValue("%f", data[row][col]);
+                if (ImGui::IsItemClicked()) {
+                    ImGui::OpenPopup(VALUE_POPUP_NAME.data());
+                    row_clicked = row;
+                    col_clicked = col;
+                } else if (ImGui::IsItemHovered()) {
+                    ImGui::SetTooltip("Cell: (%d, %d)", row, col);
+                }
+            }
+            ImGui::TableNextRow();
+        }
+
+        DrawValuePopup(row_clicked, col_clicked);
+
+        ImGui::EndTable(); // Table
+    }
 
     void WindowClass::DrawSavePopup() {
-        static char saveFilenameBuffer[256] = "text.txt";
         const auto esc_pressed = ImGui::IsKeyPressed(ImGuiKey_Escape);
 
-        ImGui::SetNextWindowSize(popUpSize);
-        ImGui::SetNextWindowPos(popUpPos);
-
+        SetPopupLayout();
         if (ImGui::BeginPopupModal(SAVE_POPUP_NAME.data(), nullptr, popUpFlags)) {
-            ImGui::InputText("Filename", saveFilenameBuffer, sizeof(saveFilenameBuffer));
+            ImGui::InputText("Filename", filenameBuffer, sizeof(filenameBuffer));
 
             if (ImGui::Button("Save", popUpButtonSize)) {
-                SaveToCsvFile(saveFilenameBuffer);
-//                currentFileName = saveFilenameBuffer;
+                SaveToCsvFile(filenameBuffer);
                 ImGui::CloseCurrentPopup();
             }
 
@@ -137,18 +196,14 @@ namespace ImGuiCsvEditor {
     }
 
     void WindowClass::DrawLoadPopup() {
-        static char loadFilenameBuffer[256] = "text.txt";
         const auto esc_pressed = ImGui::IsKeyPressed(ImGuiKey_Escape);
 
-        ImGui::SetNextWindowSize(popUpSize);
-        ImGui::SetNextWindowPos(popUpPos);
-
+        SetPopupLayout();
         if (ImGui::BeginPopupModal(LOAD_POPUP_NAME.data(), nullptr, popUpFlags)) {
-            ImGui::InputText("Filename", loadFilenameBuffer, sizeof(loadFilenameBuffer));
+            ImGui::InputText("Filename", filenameBuffer, sizeof(filenameBuffer));
 
             if (ImGui::Button("Load", popUpButtonSize)) {
-                LoadFromCsvFile(loadFilenameBuffer);
-//                currentFileName = loadFilenameBuffer;
+                LoadFromCsvFile(filenameBuffer);
                 ImGui::CloseCurrentPopup();
             }
 
@@ -163,28 +218,91 @@ namespace ImGuiCsvEditor {
     }
 
     void WindowClass::DrawValuePopup(const int row, const int col) {
+        static char buffer[64] = {'\0'};
 
+        const auto esc_pressed = ImGui::IsKeyPressed(ImGuiKey_Escape);
 
+        SetPopupLayout();
+        if (ImGui::BeginPopupModal(VALUE_POPUP_NAME.data(), nullptr, popUpFlags)) {
+            const auto label = fmt::format("##{}_{}", row, col);
+            ImGui::InputText(label.data(), buffer, sizeof(buffer));
 
+            if (ImGui::Button("Save", popUpButtonSize)) {
+                data[row][col] = std::stof(buffer);
+                ImGui::CloseCurrentPopup();
+            }
+
+            ImGui::SameLine();
+
+            if (ImGui::Button("Cancel", popUpButtonSize) || esc_pressed) {
+                ImGui::CloseCurrentPopup();
+            }
+
+            ImGui::EndPopup();
+        }
     }
 
     template<typename T>
-    void WindowClass::PlotCellValue(std::string_view formatter, const T value) {}
+    void WindowClass::PlotCellValue(std::string_view formatter, const T value) {
+        ImGui::TableNextColumn();
+        ImGui::Text(formatter.data(), value);
+    }
 
-    void WindowClass::SetPopupLayout() {}
+    void WindowClass::SetPopupLayout() {
+        ImGui::SetNextWindowSize(popUpSize);
+        ImGui::SetNextWindowPos(popUpPos);
+    }
 
     void WindowClass::SaveToCsvFile(std::string_view fileName) {
         auto out = std::ofstream(fileName.data());
-        if (out.is_open()) {
-            out.close();
+
+        if (!out || !out.is_open()) {
+            return;
         }
+
+        for (std::int32_t row = 0; row < numRows; ++row) {
+            for (std::int32_t col = 0; col < numCols; ++col) {
+                out << data[row][col];
+                out << ',';
+            }
+            out << '\n';
+        }
+
+        out.close();
     }
 
     void WindowClass::LoadFromCsvFile(std::string_view fileName) {
         auto in = std::ifstream(fileName.data());
 
-        if (in.is_open()) {
-            in.close();
+        if (!in || !in.is_open()) {
+            return;
+        }
+
+        data.clear();
+
+        auto line = std::string {};
+        auto num_rows = 0U;
+
+        while (std::getline(in, line)) {
+            auto ss = std::istringstream(line);
+            auto row = std::vector<float>{};
+            auto value = std::string{};
+
+            while (std::getline(ss, value, ',')) {
+                row.push_back(std::stof(value));
+            }
+
+            data.push_back(row);
+            ++num_rows;
+        }
+
+        in.close();
+
+        numRows = num_rows;
+        if (numRows > 0U) {
+            numCols = static_cast<std::int32_t>(data[0].size());
+        } else {
+            numCols = 0U;
         }
     }
 
