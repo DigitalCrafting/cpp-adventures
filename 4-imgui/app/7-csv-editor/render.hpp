@@ -23,6 +23,9 @@ namespace ImGuiCsvEditor {
         static constexpr auto maxNumCols = 8;
 
     public:
+        WindowClass() :
+            numCols(0), numRows(0), data({}), filenameBuffer("test.csv") {};
+
         void Draw(std::string_view label);
 
     private:
@@ -37,7 +40,7 @@ namespace ImGuiCsvEditor {
         void SaveToCsvFile(std::string_view fileName);
         void LoadFromCsvFile(std::string_view fileName);
 
-        template <typename T>
+        template<typename T>
         void PlotCellValue(std::string_view formatter, const T value);
         void SetPopupLayout();
 
