@@ -18,6 +18,34 @@ namespace ImGuiWallClock {
         ImGui::End();
     }
 
+    void WindowClass::DrawCircle(const float radius) {
+
+    }
+
+    void WindowClass::DrawClockHand(const float radius, const float theta, const ImColor color) {
+
+    }
+
+    void WindowClass::DrawAllHoursStrokes() {
+
+    }
+
+    void WindowClass::DrawAllMinutesStrokes() {
+
+    }
+
+    void WindowClass::DrawDigitalClock() {
+
+    }
+
+    void WindowClass::GetTime() {
+
+    }
+
+    std::tuple<float, float, float> WindowClass::GetTheta() {
+        return {};
+    }
+
     void render(WindowClass &window_obj) {
         window_obj.Draw("Wall clock");
     }
