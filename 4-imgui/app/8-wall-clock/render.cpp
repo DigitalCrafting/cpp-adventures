@@ -74,11 +74,51 @@ namespace ImGuiWallClock {
     }
 
     void WindowClass::DrawAllHoursStrokes() {
+        for (std::uint32_t hr = 0; hr < 12; ++hr) {
+            const auto theta = (hr * ((2.0F * PI) / 12.0F)) + offset;
+            const auto cos = std::cos(theta);
+            const auto sin = std::sin(theta);
 
+            const auto start_point = ImVec2(
+                center.x + (circleRadius * hrsStrokesLength) * cos,
+                center.y + (circleRadius * hrsStrokesLength) * sin
+            );
+            const auto end_point = ImVec2(
+                center.x + circleRadius * cos,
+                center.y + circleRadius * sin
+            );
+
+            ImGui::GetWindowDrawList()->AddLine(
+                    start_point,
+                    end_point,
+                    ImGui::GetColorU32(ImGuiCol_Text),
+                    2.0F
+                    );
+        }
     }
 
     void WindowClass::DrawAllMinutesStrokes() {
+        for (std::uint32_t min = 0; min < 60; ++min) {
+            const auto theta = (min * ((2.0F * PI) / 60.0F)) + offset;
+            const auto cos = std::cos(theta);
+            const auto sin = std::sin(theta);
 
+            const auto start_point = ImVec2(
+                    center.x + (circleRadius * minsStrokesLength) * cos,
+                    center.y + (circleRadius * minsStrokesLength) * sin
+            );
+            const auto end_point = ImVec2(
+                    center.x + circleRadius * cos,
+                    center.y + circleRadius * sin
+            );
+
+            ImGui::GetWindowDrawList()->AddLine(
+                    start_point,
+                    end_point,
+                    ImGui::GetColorU32(ImGuiCol_Text),
+                    2.0F
+            );
+        }
     }
 
     void WindowClass::DrawDigitalClock() {
