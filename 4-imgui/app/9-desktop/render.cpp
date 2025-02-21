@@ -1,7 +1,6 @@
 #include <imgui.h>
 
 #include "render.hpp"
-#include "fmt/format.h"
 
 namespace ImGuiDesktop {
     void WindowClass::Draw(std::string_view label) {
@@ -69,9 +68,72 @@ namespace ImGuiDesktop {
         ImGui::End();
     }
 
-    void WindowClass::ShowIconList(bool *open) {}
+    void WindowClass::ShowIconList(bool *open) {
+        const auto selectable_height = ImGui::GetTextLineHeightWithSpacing();
+        const auto popup_height = selectable_height * numIcons + 40.0F;
 
-    void WindowClass::Icon::Draw() {}
+        const auto esc_pressed = ImGui::IsKeyPressed(ImGuiKey_Escape);
+        ImGui::SetNextWindowSize(ImVec2(100.0F, popup_height), ImGuiCond_Always);
+        ImGui::SetNextWindowPos(ImVec2(0.0F, 680.0F - popup_height), ImGuiCond_Always);
+
+        if (ImGui::BeginPopupModal("My Programs", open, ImGuiWindowFlags_NoResize)) {
+            if (esc_pressed) {
+                ImGui::CloseCurrentPopup();
+            }
+
+            for (auto &icon: icons) {
+                if (ImGui::Selectable(icon.label.data())) {
+                    icon.popupOpen = true;
+                    ImGui::CloseCurrentPopup();
+                }
+            }
+            ImGui::EndPopup();
+        }
+    }
+
+    void WindowClass::Icon::Draw() {
+        constexpr static auto icon_window_flags =
+                ImGuiWindowFlags_NoResize |
+                ImGuiWindowFlags_NoCollapse |
+                ImGuiWindowFlags_NoScrollbar;
+        constexpr static auto button_size = ImVec2(100.0F, 50.0F);
+
+        const auto label_icon_window = fmt::format("IconWindow##{}", label);
+        const auto label_icon_popup = fmt::format("IconPopup##{}", label);
+
+        ImGui::SetNextWindowSize(
+            ImVec2(button_size.x + 35.0F, button_size.y + 35.0F),
+            ImGuiCond_Always
+        );
+        ImGui::SetNextWindowPos(position, ImGuiCond_FirstUseEver);
+
+        ImGui::Begin(label_icon_window.data(), nullptr, icon_window_flags);
+
+        if (ImGui::Button(label.data(), button_size)) {
+            ++clickCount;
+        }
+
+        if (clickCount >= 1 || popupOpen) {
+            ImGui::OpenPopup(label_icon_popup.data());
+            popupOpen = true;
+            clickCount = 0;
+        }
+        const auto esc_pressed = ImGui::IsKeyPressed(ImGuiKey_Escape);
+        if (ImGui::BeginPopupModal(label_icon_popup.data(), &popupOpen)) {
+            if (esc_pressed) {
+                popupOpen = false;
+                ImGui::CloseCurrentPopup();
+            }
+
+            ImGui::Text("Hi");
+            if (ImGui::Button("Close")) {
+                popupOpen = false;
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::EndPopup();
+        }
+        ImGui::End();
+    }
 
     void render(WindowClass &window_obj) {
         window_obj.Draw("Desktop");

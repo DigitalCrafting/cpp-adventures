@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "clock.h"
+#include "fmt/format.h"
 
 namespace ImGuiDesktop {
     class WindowClass {
@@ -23,6 +24,13 @@ namespace ImGuiDesktop {
         };
 
     public:
+        WindowClass() : icons(), clock({}) {
+            icons.reserve(numIcons);
+            for (std::uint32_t  i = 0; i < numIcons; ++i) {
+                icons.push_back(Icon{fmt::format("Icon {}", i)});
+            }
+        };
+
         void Draw(std::string_view label);
 
     private:
