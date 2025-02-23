@@ -2,9 +2,9 @@
 #include <complex>
 #include <chrono>
 
-#include "clock.h"
+#include "Clock.h"
 
-namespace ImGuiDesktop {
+namespace ImGuiFinal {
     void Clock::Draw(std::string_view label) {
         constexpr static auto window_flags =
                 ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
@@ -150,4 +150,4 @@ namespace ImGuiDesktop {
     void render(Clock &window_obj) {
         window_obj.Draw("Wall clock");
     }
-} // ImGuiDesktop
+} // ImGuiFinal

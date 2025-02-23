@@ -2,7 +2,7 @@
 
 #include "render.hpp"
 
-namespace ImGuiDesktop {
+namespace ImGuiFinal {
     void WindowClass::Draw(std::string_view label) {
         constexpr static auto window_flags =
                 ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |

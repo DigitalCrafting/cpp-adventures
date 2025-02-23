@@ -5,10 +5,10 @@
 #include <string>
 #include <vector>
 
-#include "clock.h"
+#include "Clock.h"
 #include "fmt/format.h"
 
-namespace ImGuiDesktop {
+namespace ImGuiFinal {
     class WindowClass {
     public:
         constexpr static auto numIcons = std::uint32_t{10};

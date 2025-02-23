@@ -1,4 +1,8 @@
-set(EXE_SOURCES "main.cc" "render.cpp" "clock.cpp")
+set(EXE_SOURCES "main.cc"
+        "render.cpp"
+        "Clock.cpp"
+        "CsvEditor.cpp"
+)
 set(EXE_INCLUDES "../.." "render.hpp" "${CMAKE_BINARY_DIR}/configured/include")
 
 set(LOCAL_EXE_NAME A_Final)

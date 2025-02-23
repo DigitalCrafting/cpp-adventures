@@ -6,7 +6,7 @@
 #include <string_view>
 #include "imgui.h"
 
-namespace ImGuiDesktop {
+namespace ImGuiFinal {
     class Clock {
     private:
         static constexpr auto PI = std::numbers::pi_v<float>;
@@ -49,4 +49,4 @@ namespace ImGuiDesktop {
 
     void renderClock(Clock &window_obj);
 
-} // ImGuiDesktop
+} // ImGuiFinal
