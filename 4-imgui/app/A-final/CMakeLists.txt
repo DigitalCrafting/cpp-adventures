@@ -2,6 +2,7 @@ set(EXE_SOURCES "main.cc"
         "render.cpp"
         "Clock.cpp"
         "CsvEditor.cpp"
+        "Calendar.cpp"
 )
 set(EXE_INCLUDES "../.." "render.hpp" "${CMAKE_BINARY_DIR}/configured/include")
 
