@@ -1,10 +1,11 @@
 set(EXE_SOURCES "main.cc"
+        "Window.cpp"
         "render.cpp"
         "Clock.cpp"
         "CsvEditor.cpp"
         "Calendar.cpp"
 )
-set(EXE_INCLUDES "../.." "render.hpp" "${CMAKE_BINARY_DIR}/configured/include")
+set(EXE_INCLUDES "../../" "../../external/simpleini" "render.hpp" "${CMAKE_BINARY_DIR}/configured/include")
 
 set(LOCAL_EXE_NAME A_Final)
 

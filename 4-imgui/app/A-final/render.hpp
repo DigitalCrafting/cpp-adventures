@@ -27,7 +27,7 @@ namespace ImGuiFinal {
     public:
         WindowClass() : icons(), clock({}) {
             icons.reserve(numIcons);
-            for (std::uint32_t  i = 0; i < numIcons; ++i) {
+            for (std::uint32_t  i = 1; i < numIcons; ++i) {
                 icons.push_back(Icon{fmt::format("Icon {}", i)});
             }
         };

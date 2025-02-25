@@ -7,3 +7,6 @@
 [submodule "4-imgui/external/implot"]
 	path = 4-imgui/external/implot
 	url = https://github.com/epezent/implot
+[submodule "4-imgui/external/simpleini"]
+	path = 4-imgui/external/simpleini
+	url = https://github.com/brofield/simpleini.git
