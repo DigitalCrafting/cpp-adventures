@@ -118,6 +118,7 @@ namespace ImGuiFinal {
             popupOpen = true;
             clickCount = 0;
         }
+
         const auto esc_pressed = ImGui::IsKeyPressed(ImGuiKey_Escape);
         if (ImGui::BeginPopupModal(label_icon_popup.data(), &popupOpen)) {
             if (esc_pressed) {
@@ -125,7 +126,8 @@ namespace ImGuiFinal {
                 ImGui::CloseCurrentPopup();
             }
 
-            ImGui::Text("Hi");
+            window->Draw(label.data(), &popupOpen);
+
             if (ImGui::Button("Close")) {
                 popupOpen = false;
                 ImGui::CloseCurrentPopup();

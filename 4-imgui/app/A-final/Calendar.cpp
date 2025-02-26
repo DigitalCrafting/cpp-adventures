@@ -4,7 +4,7 @@
 #include "fmt/format.h"
 
 namespace ImGuiFinal {
-    void Calendar::Draw(std::string_view label) {
+    void Calendar::Draw(std::string_view label, bool *open) {
         constexpr static auto window_flags =
                 ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
                 ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar;
@@ -14,7 +14,7 @@ namespace ImGuiFinal {
         ImGui::SetNextWindowSize(window_size);
         ImGui::SetNextWindowPos(window_pos);
 
-        ImGui::Begin(label.data(), nullptr, window_flags);
+        ImGui::Begin(label.data(), open, window_flags);
 
         DrawDateCombo();
         ImGui::Separator();

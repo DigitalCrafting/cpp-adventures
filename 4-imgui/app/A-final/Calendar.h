@@ -10,8 +10,10 @@
 #include <chrono>
 #include <map>
 
+#include "Window.h"
+
 namespace ImGuiFinal {
-    class Calendar {
+    class Calendar : public Window {
     public:
         static constexpr auto meetingWindowFlags =
                 ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
@@ -52,8 +54,9 @@ namespace ImGuiFinal {
 
     public:
         Calendar(): meetings({}){};
+        virtual ~Calendar() {};
 
-        void Draw(std::string_view label);
+        void Draw(std::string_view label, bool *open = nullptr) final;
 
         void LoadMeetingsFromFile(std::string_view filename);
         void SaveMeetingsToFile(std::string_view filename);
