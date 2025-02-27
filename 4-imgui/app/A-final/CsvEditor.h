@@ -6,10 +6,11 @@
 #include <cstring>
 #include <vector>
 #include "imgui.h"
+#include "Window.h"
 
 
 namespace ImGuiFinal {
-    class CsvEditor {
+    class CsvEditor : public Window {
     public:
         static constexpr auto bufferSize = std::size_t{1024};
         static constexpr auto popUpFlags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
@@ -27,8 +28,9 @@ namespace ImGuiFinal {
     public:
         CsvEditor() :
                 numCols(0), numRows(0), data({}), filenameBuffer("test.csv") {};
+        virtual ~CsvEditor() {};
 
-        void Draw(std::string_view label);
+        void Draw(std::string_view label, bool *open = nullptr) final;
 
     private:
         void DrawSizeButtons();

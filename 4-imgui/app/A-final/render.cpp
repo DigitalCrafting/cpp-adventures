@@ -95,7 +95,8 @@ namespace ImGuiFinal {
         constexpr static auto icon_window_flags =
                 ImGuiWindowFlags_NoResize |
                 ImGuiWindowFlags_NoCollapse |
-                ImGuiWindowFlags_NoScrollbar;
+                ImGuiWindowFlags_NoScrollbar |
+                ImGuiWindowFlags_NoTitleBar;
         constexpr static auto button_size = ImVec2(100.0F, 50.0F);
 
         const auto label_icon_window = fmt::format("IconWindow##{}", label);
@@ -113,7 +114,7 @@ namespace ImGuiFinal {
             ++clickCount;
         }
 
-        if (clickCount > 1 || popupOpen) {
+        if (clickCount >= 1 || popupOpen) {
             ImGui::OpenPopup(label_icon_popup.data());
             popupOpen = true;
             clickCount = 0;

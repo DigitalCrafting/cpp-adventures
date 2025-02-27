@@ -8,11 +8,12 @@
 #include "Clock.h"
 #include "Calendar.h"
 #include "fmt/format.h"
+#include "CsvEditor.h"
 
 namespace ImGuiFinal {
     class WindowClass {
     public:
-        constexpr static auto numIcons = std::uint32_t{1};
+        constexpr static auto numIcons = std::uint32_t{2};
 
         struct Icon {
             Icon(std::string_view label_, Window *window_): label(label_), position(ImVec2{}), window(window_), popupOpen(false), clickCount(0) {};
@@ -26,9 +27,10 @@ namespace ImGuiFinal {
         };
 
     public:
-        WindowClass() : icons(), clock({}), calendar() {
+        WindowClass() : icons(), clock({}), calendar(), csvEditor() {
             icons.reserve(numIcons);
             icons.emplace_back("Calendar", &calendar);
+            icons.emplace_back("CsvEditor", &csvEditor);
         };
 
         void Draw(std::string_view label);
@@ -44,6 +46,7 @@ namespace ImGuiFinal {
         Clock clock;
 
         Calendar calendar;
+        CsvEditor csvEditor;
     };
 
     void render(WindowClass &window_obj);
