@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "my_lib.h"
+#include "profiler.h"
 #include "config.hpp"
 
 int main() {

@@ -4,10 +4,10 @@
 #include <spdlog/spdlog.h>
 #include <nlohmann/json.hpp>
 
-#include "my_lib.h"
+#include "profiler.h"
 
 void print_hello_world() {
-    std::cout << "Hello world!\n";
+    std::cout << "Hello from profiler!\n";
 
     std::cout << "FMT:" << FMT_VERSION << "\n";
 
