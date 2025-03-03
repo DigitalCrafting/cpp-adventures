@@ -17,6 +17,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS        OFF)
 
 set(LIBRARY_PROFILER_NAME ProfilerLibrary)
+set(LIBRARY_HAVERSINE_NAME HaversineLibrary)
 set(EXECUTABLE_NAME Executable)
 
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/")
@@ -27,13 +28,6 @@ include(Docs)
 if(ENABLE_WARNINGS)
     include(Warnings)
 endif()
-
-FetchContent_Declare(
-        nlohmann_json
-        GIT_REPOSITORY https://github.com/nlohmann/json
-        GIT_TAG v3.11.3
-        GIT_SHALLOW TRUE)
-FetchContent_MakeAvailable(nlohmann_json)
 
 FetchContent_Declare(
         fmt

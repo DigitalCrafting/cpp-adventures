@@ -9,7 +9,6 @@ add_library(${LIBRARY_PROFILER_NAME} STATIC
 
 target_include_directories(${LIBRARY_PROFILER_NAME} PUBLIC ${LIBRARY_INCLUDES})
 target_link_libraries(${LIBRARY_PROFILER_NAME} PUBLIC
-    nlohmann_json::nlohmann_json
     fmt::fmt
     spdlog::spdlog
     cxxopts::cxxopts
