@@ -1,25 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
 
-#include "profiler.h"
-
-TEST_CASE("factorial1")
-{
-    REQUIRE(factorial(0) == 1);
-    REQUIRE(factorial(1) == 1);
-    REQUIRE(factorial(2) == 2);
-    REQUIRE(factorial(3) == 6);
-    REQUIRE(factorial(10) == 3628800);
-}
-
-TEST_CASE("factorial2")
-{
-    REQUIRE(factorial(0) == 1);
-    REQUIRE(factorial(1) == 1);
-    REQUIRE(factorial(2) == 2);
-    REQUIRE(factorial(3) == 6);
-    REQUIRE(factorial(10) == 3628800);
-}
-
 TEST_CASE("vectors can be sized and resized", "[vector]")
 {
 // This setup will be done 4 times in total, once for each section
