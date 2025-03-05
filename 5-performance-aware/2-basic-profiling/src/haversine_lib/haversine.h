@@ -1,8 +1,7 @@
 #pragma once
 
 #include <cmath>
-
-typedef double f64;
+#include "common_types.h"
 
 static f64 Square(f64 a) {
     f64 result = a * a;

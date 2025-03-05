@@ -1,6 +1,6 @@
 set(LIBRARY_SOURCES "haversine.cpp")
 set(LIBRARY_HEADERS "haversine.h")
-set(LIBRARY_INCLUDES "./" "${CMAKE_BINARY_DIR}/configured/include")
+set(LIBRARY_INCLUDES "./" "${CMAKE_BINARY_DIR}/configured/include" "${CMAKE_SOURCE_DIR}/src/types_lib")
 
 add_library(${LIBRARY_HAVERSINE_NAME} STATIC
         ${LIBRARY_SOURCES}
