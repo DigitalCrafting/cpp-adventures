@@ -1,5 +1,5 @@
 set(EXE_SOURCES "generator_main.cc")
-set(EXE_INCLUDES "./" "${CMAKE_SOURCE_DIR}/src/types_lib")
+set(EXE_INCLUDES "./" "${CMAKE_SOURCE_DIR}/src/commons_lib")
 
 add_executable(0_test_data_generator ${EXE_SOURCES})
 target_include_directories(0_test_data_generator PUBLIC ${EXE_INCLUDES})
