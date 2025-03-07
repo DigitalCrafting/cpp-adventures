@@ -54,3 +54,18 @@ static f64 RandomInRange(RandomSeries *series, f64 min, f64 max) {
 
     return result;
 }
+
+static f64 RandomDegree(RandomSeries *series, f64 center, f64 radius, f64 maxAllowed) {
+    f64 minVal = center - radius;
+    if (minVal < -maxAllowed) {
+        minVal = -maxAllowed;
+    }
+
+    f64 maxVal = center + radius;
+    if (maxVal > maxAllowed) {
+        maxVal = maxAllowed;
+    }
+
+    f64 result = RandomInRange(series, minVal, maxVal);
+    return result;
+}
