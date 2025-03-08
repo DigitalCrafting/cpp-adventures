@@ -5,7 +5,15 @@
 #include "config.hpp"
 #include "common_random.h"
 
-
+static FILE* Open(long long unsigned pairCount, const char* label, const char *extension) {
+    char temp[256];
+    sprintf(temp, "data_%llu_%s.%s", pairCount, label, extension);
+    FILE* result = fopen(temp, "wb");
+    if (!result) {
+        fprintf(stderr, "Unable to open \"%s\" for writing.\n", temp);
+    }
+    return result;
+}
 
 /*
  * Generates a file with longitudes and latitudes pairs, for testing haversine performance, in JSON format.
@@ -31,9 +39,23 @@ void generate_test_data(int pairs) {
 
     RandomSeries seed = Seed(31);
 
-    for (int i = 0; i < pairs; i++) {
-        printf("x: %f, ", RandomDegree(&seed, xCenter, xRadius, maxAllowedX));
-        printf("y: %f\n", RandomDegree(&seed, yCenter, yRadius, maxAllowedY));
+    FILE* testDataFile = Open(pairs, "flex", "json");
+    if (testDataFile) {
+        fprintf(testDataFile, "{\"pairs\": [\n");
+
+        for (int i = 0; i < pairs; i++) {
+            f64 x0 = RandomDegree(&seed, xCenter, xRadius, maxAllowedX);
+            f64 y0 = RandomDegree(&seed, yCenter, yRadius, maxAllowedY);
+
+            f64 x1 = RandomDegree(&seed, xCenter, xRadius, maxAllowedX);
+            f64 y1 = RandomDegree(&seed, yCenter, yRadius, maxAllowedY);
+
+            const char* jsonSeparator = (i == (pairs - 1)) ? "\n" : ",\n";
+
+            fprintf(testDataFile, "    {\"x0\": %.16f,\"y0\": %.16f,\"x1\": %.16f,\"y1\": %.16f}%s", x0, y0, x1, y1, jsonSeparator);
+        }
+
+        fprintf(testDataFile, "]}\n");
     }
 }
 
