@@ -3,6 +3,11 @@
 #include <cmath>
 #include "common_types.h"
 
+struct HaversinePair {
+    f64 x0, y0;
+    f64 x1, y1;
+};
+
 static f64 Square(f64 a) {
     f64 result = a * a;
     return result;
