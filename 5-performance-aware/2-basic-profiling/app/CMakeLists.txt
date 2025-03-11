@@ -1,1 +1,2 @@
 add_subdirectory(0_test_data_generator)
+add_subdirectory(0_test_data_parser)
