@@ -4,7 +4,8 @@
 #include "profiler.h"
 #include "config.hpp"
 #include "common_random.h"
-#include "common_file.h"
+#include "common_json.h"
+#include "base_json_lookup_parser.h"
 
 /*
  * Parses a file with longitudes and latitudes pairs, for testing haversine performance, in JSON format.
@@ -25,6 +26,8 @@ void parse_test_data() {
 
     print_hello_haversine();
     print_hello_world();
+
+    BaseParser::ParseHaversinePairs({}, 10, nullptr);
 }
 
 int main() {

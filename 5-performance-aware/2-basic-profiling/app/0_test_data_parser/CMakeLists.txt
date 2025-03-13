@@ -6,6 +6,7 @@ target_include_directories(0_test_data_parser PUBLIC ${EXE_INCLUDES})
 target_link_libraries(0_test_data_parser PUBLIC
         ${LIBRARY_PROFILER_NAME}
         ${LIBRARY_HAVERSINE_NAME}
+        ${LIBRARY_PARSER_NAME}
 )
 
 if (ENABLE_WARNINGS)

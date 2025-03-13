@@ -1,6 +1,9 @@
 #pragma once
 
 #include "common_types.h"
+#include <cstddef>
+#include <cstdlib>
+#include <cstdio>
 
 /* -------------- Buffer -------------- */
 #define CONSTANT_STRING(String) {sizeof(String) - 1, (u8 *)(String)}

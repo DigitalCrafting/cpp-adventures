@@ -18,6 +18,7 @@ set(CMAKE_CXX_EXTENSIONS        OFF)
 
 set(LIBRARY_PROFILER_NAME ProfilerLibrary)
 set(LIBRARY_HAVERSINE_NAME HaversineLibrary)
+set(LIBRARY_PARSER_NAME JSONParserLibrary)
 set(EXECUTABLE_NAME Executable)
 
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/")
