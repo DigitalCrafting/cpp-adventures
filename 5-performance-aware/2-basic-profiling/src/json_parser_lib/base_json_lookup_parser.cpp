@@ -3,20 +3,45 @@
 
 namespace BaseParser {
     b32 IsJSONDigit(Buffer source, u64 at) {
-        return false;
+        b32 result = false;
+        if (IsInBounds(source, at)) {
+            u8 val = source.data[at];
+            result = ((val >= '0') && (val <= '9'));
+        }
+        return result;
     }
 
     b32 IsJSONWhitespace(Buffer source, u64 at) {
-        return false;
+        b32 result = false;
+        if (IsInBounds(source, at)) {
+            u8 val = source.data[at];
+            result = ((val == ' ') || (val == '\t') || (val == '\n') || (val == '\r'));
+        }
+        return result;
     }
 
     b32 IsParsing(JsonParser *parser) {
-        return false;
+        b32 result = !parser->hadError && IsInBounds(parser->source, parser->at);
+        return result;
     }
 
-    void Error(JsonParser *parser, JsonToken token, char const *message) {}
+    void Error(JsonParser *parser, JsonToken token, char const *message) {
+        parser->hadError = true;
+        fprintf(stderr, "ERROR: \"%.*s\" - %s\n", (u32)token.value.count, (char *)token.value.data, message);
+    }
 
-    void ParseKeyword(Buffer source, u64 *at, Buffer keywordRemaining, JsonTokenType type, JsonToken *result) {}
+    void ParseKeyword(Buffer source, u64 *at, Buffer keywordRemaining, JsonTokenType type, JsonToken *result) {
+        if((source.count - *at) >= keywordRemaining.count) {
+            Buffer check = source;
+            check.data += *at;
+            check.count = keywordRemaining.count;
+            if (AreEqual(check, keywordRemaining)) {
+                result->type = type;
+                result->value.count += keywordRemaining.count;
+                *at += keywordRemaining.count;
+            }
+        }
+    }
 
     JsonToken GetJSONToken(JsonParser *parser) {
         return {};
