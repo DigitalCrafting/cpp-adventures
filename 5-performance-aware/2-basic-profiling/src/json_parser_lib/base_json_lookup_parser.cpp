@@ -44,7 +44,101 @@ namespace BaseParser {
     }
 
     JsonToken GetJSONToken(JsonParser *parser) {
-        return {};
+        JsonToken result = {};
+
+        Buffer source = parser->source;
+        u64 at = parser->at;
+
+        while(IsJSONWhitespace(source, at)) {
+            ++at;
+        }
+
+        if (IsInBounds(source, at)) {
+            result.type = JsonTokenType::Error;
+            result.value.count = 1;
+            result.value.data = source.data + at;
+            u8 val = source.data[at++];
+
+            switch (val) {
+                case '{': {result.type = JsonTokenType::OpenBrace;} break;
+                case '[': {result.type = JsonTokenType::OpenBracket;} break;
+                case '}': {result.type = JsonTokenType::CloseBrace;} break;
+                case ']': {result.type = JsonTokenType::CloseBracket;} break;
+                case ',': {result.type = JsonTokenType::Comma;} break;
+                case ':': {result.type = JsonTokenType::Colon;} break;
+                case ';': {result.type = JsonTokenType::SemiColon;} break;
+
+                case 'f': {
+                    ParseKeyword(source, &at, CONSTANT_STRING("alse"), JsonTokenType::False, &result);
+                } break;
+                case 'n': {
+                    ParseKeyword(source, &at, CONSTANT_STRING("ull"), JsonTokenType::Null, &result);
+                } break;
+                case 't': {
+                    ParseKeyword(source, &at, CONSTANT_STRING("rue"), JsonTokenType::True, &result);
+                } break;
+
+                case '"': {
+                    result.type = JsonTokenType::StringLiteral;
+                    u64 stringStart = at;
+
+                    while (IsInBounds(source, at) && (source.data[at] != '"')) {
+                        if (IsInBounds(source, (at + 1)) && (source.data[at] == '\\') && (source.data[at + 1] == '"')) {
+                            // Skip escaped quotation marks
+                            ++at;
+                        }
+                        ++at;
+                    }
+                } break;
+
+                case '-':
+                case '0':
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8':
+                case '9': {
+                    u64 start = at - 1;
+                    result.type = JsonTokenType::Number;
+
+                    if ((val == '-') && IsInBounds(source, at)) {
+                        val = source.data[at++];
+                    }
+
+                    if (val != '0') {
+                        while(IsJSONDigit(source, at)) {
+                            ++at;
+                        }
+                    }
+
+                    // Scientific notation
+                    if (IsInBounds(source, at) && ((source.data[at] == 'e') || (source.data[at] == 'E'))) {
+                        ++at;
+
+                        if (IsInBounds(source, at) && ((source.data[at] == '+') || (source.data[at] == '-'))) {
+                            ++at;
+                        }
+
+                        while (IsJSONDigit(source, at)) {
+                            ++at;
+                        }
+                    }
+
+                    result.value.count = at - start;
+                } break;
+
+                default: {} break;
+            }
+
+            parser->at = at;
+            return result;
+        }
+
+        return result;
     }
 
     JsonElement *ParseJSONList(JsonParser *parser, JsonToken startingToken, JsonToken endType, b32 hasLabels) {
