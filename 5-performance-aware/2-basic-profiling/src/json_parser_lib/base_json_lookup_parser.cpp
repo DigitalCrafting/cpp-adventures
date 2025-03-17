@@ -141,12 +141,41 @@ namespace BaseParser {
         return result;
     }
 
-    JsonElement *ParseJSONList(JsonParser *parser, JsonToken startingToken, JsonToken endType, b32 hasLabels) {
+    JsonElement *ParseJSONList(JsonParser *parser, JsonToken startingToken, JsonTokenType endType, b32 hasLabels) {
         return {};
     }
 
     JsonElement *ParseJSONElement(JsonParser *parser, Buffer label, JsonToken value) {
-        return {};
+        b32 valid = true;
+
+        JsonElement *subElement = 0;
+        if (value.type == JsonTokenType::OpenBracket) {
+            subElement = ParseJSONList(parser, value, JsonTokenType::CloseBracket, false);
+        } else if (value.type == JsonTokenType::OpenBrace) {
+            subElement = ParseJSONList(parser, value, JsonTokenType::CloseBrace, true);
+        } else if (
+           value.type == JsonTokenType::StringLiteral ||
+           value.type == JsonTokenType::True ||
+           value.type == JsonTokenType::False ||
+           value.type == JsonTokenType::Null ||
+           value.type == JsonTokenType::Number
+        ) {
+            // Nothing to do here
+        } else {
+            valid = false;
+        }
+
+        JsonElement *result = 0;
+
+        if (valid) {
+            result = (JsonElement*) malloc(sizeof(JsonElement));
+            result->label = label;
+            result->value = value.value;
+            result->firstSubElement = subElement;
+            result->nextSibling = 0;
+        }
+
+        return result;
     }
 
     JsonElement *ParseJSON(Buffer inputJson) {
