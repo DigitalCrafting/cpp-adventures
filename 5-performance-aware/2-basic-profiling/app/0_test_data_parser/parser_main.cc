@@ -27,7 +27,9 @@ void parse_test_data() {
     print_hello_haversine();
     print_hello_world();
 
-    BaseParser::ParseHaversinePairs({}, 10, nullptr);
+    HaversinePair pairs = {};
+
+    BaseParser::ParseHaversinePairs({}, 0, &pairs);
 }
 
 int main() {

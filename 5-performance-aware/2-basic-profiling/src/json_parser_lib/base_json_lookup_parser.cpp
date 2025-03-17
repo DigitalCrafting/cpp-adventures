@@ -142,7 +142,45 @@ namespace BaseParser {
     }
 
     JsonElement *ParseJSONList(JsonParser *parser, JsonToken startingToken, JsonTokenType endType, b32 hasLabels) {
-        return {};
+        JsonElement *firstElement = {};
+        JsonElement *lastElement = {};
+
+        while (IsParsing(parser)) {
+            Buffer label = {};
+            JsonToken value = GetJSONToken(parser);
+            if (hasLabels) {
+                if (value.type == JsonTokenType::StringLiteral) {
+                    label = value.value;
+                    JsonToken colon = GetJSONToken(parser);
+
+                    if (colon.type == JsonTokenType::Colon) {
+                        value = GetJSONToken(parser);
+                    } else {
+                        Error(parser, colon, "Expected colon after field name");
+                    }
+                } else if (value.type != endType) {
+                    Error(parser, value, "Unexpected token in JSON");
+                }
+            }
+
+            JsonElement *element = ParseJSONElement(parser, label, value);
+            if (element) {
+                lastElement = (lastElement ? lastElement->nextSibling : firstElement) = element;
+            } else if (value.type == endType) {
+                break;
+            } else {
+                Error(parser, value, "Unexpected token in JSON");
+            }
+
+            JsonToken comma = GetJSONToken(parser);
+            if (comma.type == endType) {
+                break;
+            } else if (comma.type != JsonTokenType::Comma) {
+                Error(parser, value, "Unexpected token in JSON");
+            }
+        }
+
+        return firstElement;
     }
 
     JsonElement *ParseJSONElement(JsonParser *parser, Buffer label, JsonToken value) {
@@ -179,29 +217,135 @@ namespace BaseParser {
     }
 
     JsonElement *ParseJSON(Buffer inputJson) {
-        return {};
+        JsonParser parser = {};
+        parser.source = inputJson;
+
+        JsonElement *result = ParseJSONElement(&parser, {}, GetJSONToken(&parser));
+        return result;
     }
 
-    void FreeJSON(JsonElement *element) {}
+    void FreeJSON(JsonElement *element) {
+        while (element) {
+            JsonElement *freeElement = element;
+            element = element->nextSibling;
+
+            FreeJSON(freeElement->firstSubElement);
+            free(freeElement);
+        }
+    }
 
     JsonElement *LookupElement(JsonElement *object, Buffer elementName) {
-        return nullptr;
+        JsonElement *result = 0;
+
+        if (object) {
+            for (JsonElement *search = object->firstSubElement; search; search = search->nextSibling) {
+                if (AreEqual(search->label, elementName)) {
+                    result = search;
+                    break;
+                }
+            }
+        }
+
+        return result;
     }
 
     f64 ConvertJSONSign(Buffer source, u64 *atResult) {
-        return 0.0f;
+        u64 at = *atResult;
+
+        f64 result = 1.0;
+        if (IsInBounds(source, at) && (source.data[at] == '-')) {
+            result = -1.0;
+            ++at;
+        }
+
+        *atResult = at;
+
+        return result;
     }
 
     f64 ConvertJSONNumber(Buffer source, u64 *atResult) {
-        return 0.0f;
+        u64 at = *atResult;
+        f64 result = 0.0;
+
+        while (IsInBounds(source, at)) {
+            u8 character = source.data[at] - (u8)'0';
+            if (character < 10) {
+                result = 10.0 * result + (f64) character;
+                ++at;
+            } else {
+                break;
+            }
+        }
+
+        *atResult = at;
+
+        return result;
     }
 
     f64 ConvertElementToF64(JsonElement *object, Buffer elementName) {
-        return 0.0f;
+        f64 result = 0.0;
+
+        JsonElement *element = LookupElement(object, elementName);
+        if (element) {
+            Buffer source = element->value;
+            u64 at = 0;
+
+            f64 sign = ConvertJSONSign(source, &at);
+            f64 number = ConvertJSONNumber(source, &at);
+
+            if (IsInBounds(source, at) && (source.data[at] == '.')) {
+                ++at;
+                f64 c = 1.0 / 10.0;
+
+                while (IsInBounds(source, at)) {
+                    u8 character = source.data[at] - (u8)'0';
+                    if (character < 10) {
+                        number = number + c*(f64)character;
+                        c *= 1.0/10.0;
+                        ++at;
+                    } else {
+                        break;
+                    }
+                }
+            }
+
+            if (IsInBounds(source, at) && ((source.data[at] == 'e') || (source.data[at] == 'E'))) {
+                ++at;
+                if (IsInBounds(source, at) && (source.data[at] == '+')) {
+                    ++at;
+                }
+
+                f64 exponentSign = ConvertJSONSign(source, &at);
+                f64 exponent = exponentSign* ConvertJSONNumber(source, &at);
+                number *= pow(10.0, exponent);
+            }
+
+            result = sign * number;
+        }
+
+        return result;
     }
 
     u64 ParseHaversinePairs(Buffer inputJson, u64 maxPairCount, HaversinePair *pairs) {
-        std::cout << "Hello from parser lib!\n";
-        return 0;
+        u64 pairCount = 0;
+
+        JsonElement *json = ParseJSON(inputJson);
+        JsonElement *pairsArray = LookupElement(json, CONSTANT_STRING("pairs"));
+        if (pairsArray) {
+            for (JsonElement *element = pairsArray->firstSubElement;
+                element && (pairCount < maxPairCount);
+                element = element->nextSibling
+            ) {
+                HaversinePair *pair = pairs + pairCount++;
+
+                pair->x0 = ConvertElementToF64(element, CONSTANT_STRING("x0"));
+                pair->y0 = ConvertElementToF64(element, CONSTANT_STRING("y0"));
+                pair->x1 = ConvertElementToF64(element, CONSTANT_STRING("x1"));
+                pair->y1 = ConvertElementToF64(element, CONSTANT_STRING("y1"));
+            }
+        }
+
+        FreeJSON(json);
+        return pairCount;
     }
 }
