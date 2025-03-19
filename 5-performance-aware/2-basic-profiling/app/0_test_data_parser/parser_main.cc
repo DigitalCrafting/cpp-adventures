@@ -52,17 +52,18 @@ void parse_test_data() {
     print_hello_haversine();
     print_hello_world();
 
-    HaversinePair pairs = {};
-
-    BaseParser::ParseHaversinePairs({}, 0, &pairs);
-}
-
-int main() {
-    parse_test_data();
-
     Buffer file = ReadEntireFile("/home/kamil/Projects/github/cpp-adventures/5-performance-aware/2-basic-profiling/cmake-build-debug/app/0_test_data_generator/data_10_flex.json");
 
     std::cout << "Read file size: " << file.count << '\n';
 
+    HaversinePair *pairs = (HaversinePair*)malloc(10 * sizeof(HaversinePair));
+
+    BaseParser::ParseHaversinePairs(file, 10, pairs);
+
+    std::cout << "First parsed pair: " << pairs[0].x0 << " - " << pairs[0].y0 << " - " << pairs[0].x1 << " - " << pairs[0].y1 << '\n';
+}
+
+int main() {
+    parse_test_data();
     return 0;
 }

@@ -89,6 +89,12 @@ namespace BaseParser {
                         }
                         ++at;
                     }
+
+                    result.value.data = source.data + stringStart;
+                    result.value.count = at - stringStart;
+                    if (IsInBounds(source, at)) {
+                        ++at;
+                    }
                 } break;
 
                 case '-':
@@ -111,6 +117,13 @@ namespace BaseParser {
 
                     if (val != '0') {
                         while(IsJSONDigit(source, at)) {
+                            ++at;
+                        }
+                    }
+
+                    if (IsInBounds(source, at) && (source.data[at] == '.')) {
+                        ++at;
+                        while (IsJSONDigit(source, at)) {
                             ++at;
                         }
                     }
