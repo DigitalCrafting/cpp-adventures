@@ -1,6 +1,9 @@
 
-haversine_gen:
-	g++ haversine_gen.cpp -o haversine_gen
+haversine_gen: clean
+	g++ haversine_gen.cpp -o haversine_gen.out
 
 clean:
-	rm -f haversine_gen
+	rm -f haversine_gen.out
+
+
+.PHONY: haversine_gen
