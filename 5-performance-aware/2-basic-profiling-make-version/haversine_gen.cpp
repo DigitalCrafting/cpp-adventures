@@ -19,7 +19,7 @@ void generate(int pairs) {
 
     FILE* testDataFile = Open(pairs, "flex", "json");
     if (testDataFile) {
-        fprintf(testDataFile, "{\"pairs\n: [\n");
+        fprintf(testDataFile, "{\"pairs\"\n: [\n");
         for (int i = 0; i < pairs; ++i) {
             f64 x0 = RandomDegree(&seed, xCenter, xRadius, maxAllowedX);
             f64 y0 = RandomDegree(&seed, yCenter, yRadius, maxAllowedY);
