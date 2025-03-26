@@ -6,8 +6,9 @@
 #include "common/common_types.h"
 #include "common/common_random.h"
 #include "common/common_file.h"
+#include "common/common_haversine.h"
 
-void generate(int pairs) {
+void generate(int pairs, u64 seedValue, u64 clusterCountLeft, const char *methodName) {
     f64 maxAllowedX = 180;
     f64 maxAllowedY = 90;
 
@@ -16,24 +17,50 @@ void generate(int pairs) {
     f64 xRadius = maxAllowedX;
     f64 yRadius = maxAllowedY;
 
-    RandomSeries seed = Seed(31);
+    RandomSeries seed = Seed(seedValue);
 
     FILE* testDataFile = Open(pairs, "flex", "json");
-    if (testDataFile) {
+    FILE* answersFile = Open(pairs, "haveranswer", "f64");
+    if (testDataFile && answersFile) {
         fprintf(testDataFile, "{\"pairs\"\n: [\n");
+        u64 clusterCountMax = 1 + (pairs / 64);
+        f64 sum = 0;
+        f64 sumCoef = 1.0 / (f64)pairs;
+
         for (int i = 0; i < pairs; ++i) {
+            if (clusterCountLeft-- == 0) {
+                clusterCountLeft = clusterCountMax;
+                xCenter = RandomInRange(&seed, -maxAllowedX, maxAllowedX);
+                yCenter = RandomInRange(&seed, -maxAllowedY, maxAllowedY);
+                xRadius = RandomInRange(&seed, 0, maxAllowedX);
+                yRadius = RandomInRange(&seed, 0, maxAllowedY);
+            }
+
             f64 x0 = RandomDegree(&seed, xCenter, xRadius, maxAllowedX);
             f64 y0 = RandomDegree(&seed, yCenter, yRadius, maxAllowedY);
             f64 x1 = RandomDegree(&seed, xCenter, xRadius, maxAllowedX);
             f64 y1 = RandomDegree(&seed, yCenter, yRadius, maxAllowedY);
 
+            f64 earthRadius = 6372.8;
+            f64 haversineDistance = ReferenceHaversine(x0, y0, x1, y1, earthRadius);
+
+            sum += sumCoef * haversineDistance;
+
             const char* jsonSeparator = (i == (pairs - 1)) ? "\n" : ",\n";
 
             fprintf(testDataFile, "    {\"x0\": %.16f,\"y0\": %.16f,\"x1\": %.16f,\"y1\": %.16f}%s", x0, y0, x1, y1, jsonSeparator);
+            fwrite(&haversineDistance, sizeof(haversineDistance), 1, answersFile);
         }
+
+        fprintf(testDataFile, "]}\n");
+        fwrite(&sum, sizeof(sum), 1, answersFile);
+
+        fprintf(stdout, "Method: %s\n", methodName);
+        fprintf(stdout, "Random seed: %lu\n", seedValue);
+        fprintf(stdout, "Pair count: %u\n", pairs);
+        fprintf(stdout, "Expected sum: %.16f\n", sum);
     }
 
-    fprintf(testDataFile, "]}\n");
 }
 
 int main(int argc, char **args) {
@@ -73,10 +100,6 @@ int main(int argc, char **args) {
     }
 
 
-    fprintf(stdout, "Method: %s\n", methodName);
-    fprintf(stdout, "Random seed: %lu\n", seedValue);
-    fprintf(stdout, "Pair count: %lu\n", nmbrOfPairs);
-
-    generate(nmbrOfPairs);
+    generate(nmbrOfPairs, seedValue, clusterCountLeft, methodName);
     return 0;
 }
