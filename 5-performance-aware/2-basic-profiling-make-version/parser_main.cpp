@@ -1,10 +1,10 @@
-#include <iostream>
+#include <cstdio>
+#include <functional>
 #include <sys/stat.h>
 
 #include "common/common_types.h"
 #include "common/common_file.h"
 #include "common/common_haversine.h"
-#include "common/common_json.h"
 #include "base_json_lookup_parser.cpp"
 
 static Buffer ReadEntireFile(char *filename) {
@@ -44,10 +44,21 @@ static f64 SumHaversineDistances(u64 pairCount, HaversinePair* pairs) {
 }
 
 int main(int argc, char **args) {
+    if (argc == 1 || argc > 3) {
+        fprintf(stderr, "Usage: %s [haversine_input.json]\n", args[0]);
+        fprintf(stderr, "       %s [haversine_input.json] [answers.f64]\n", args[0]);
+        return 1;
+    }
+
     Buffer file = ReadEntireFile(args[1]);
 
     u32 minimumJSONPairEncoding = 6*4;
     u64 maxPairCount = file.count / minimumJSONPairEncoding;
+
+    if (!maxPairCount) {
+        fprintf(stderr, "ERROR: Mafromed input json");
+        return 1;
+    }
 
     HaversinePair *pairs = (HaversinePair*)malloc(maxPairCount * sizeof(HaversinePair));
 
@@ -58,5 +69,30 @@ int main(int argc, char **args) {
     fprintf(stdout, "Input size: %lu\n", file.count);
     fprintf(stdout, "Pair count: %lu\n", pairCount);
     fprintf(stdout, "Haversine sum: %.16f\n", sum);
+    
+    if (argc == 3) {
+        Buffer answersFile = ReadEntireFile(args[2]);
+        if (answersFile.count >= sizeof(f64)) {
+            f64* answerValues = (f64*)answersFile.data;
+            
+            fprintf(stdout, "\nValidation:\n");
+
+            u64 refAnswerCount = ((answersFile.count - sizeof(f64)) / sizeof(f64));
+            if (pairCount != refAnswerCount) {
+                fprintf(stdout, "FAILED - pair count doesn't match %lu.\n", refAnswerCount);
+            }
+
+            f64 refSum = answerValues[refAnswerCount];
+            fprintf(stdout, "Reference sum: %.16f", refSum);
+            fprintf(stdout, "Difference: %.16f\n", sum - refSum);
+            fprintf(stdout, "\n");
+        }
+
+        FreeBuffer(&answersFile);
+    }
+
+
+    FreeBuffer(&file);
+
     return 0;
 }
