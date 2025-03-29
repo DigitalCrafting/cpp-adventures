@@ -59,6 +59,9 @@ build: create $(CXX_OBJECTS)
 run:
 	./$(BUILD_DIR)/$(EXECUTABLE_NAME)
 
+sizes: create 
+	$(COMPILER_CALL) src/sizes.cpp $(LDFLAGS) -o $(BUILD_DIR)/sizes.out
+	./build/sizes.out
 
 clean:
 	rm -fR $(BUILD_DIR)
@@ -74,4 +77,4 @@ $(BUILD_DIR)/%.o: $(SOURCE_DIR)/%.cc
 	$(COMPILER_CALL) -c $< -o $@
 
 
-.PHONY: all create build run clean
+.PHONY: all create build run clean sizes
