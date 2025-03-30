@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cmath>
-#include "common_types.h"
+#include "types.h"
 
 struct HaversinePair {
     f64 x0, y0;

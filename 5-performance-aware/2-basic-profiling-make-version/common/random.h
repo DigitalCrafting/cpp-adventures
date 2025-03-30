@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common_types.h"
+#include "types.h"
 
 struct RandomSeries {
     u64 A, B, C, D;

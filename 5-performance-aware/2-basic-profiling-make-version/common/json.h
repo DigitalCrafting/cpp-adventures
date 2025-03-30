@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common_file.h"
+#include "file.h"
 
 enum JsonTokenType {
     EndOfStream,

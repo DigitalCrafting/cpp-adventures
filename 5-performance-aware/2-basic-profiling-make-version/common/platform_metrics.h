@@ -1,6 +1,6 @@
 #pragma once
 
-#include "./common_types.h"
+#include "./types.h"
 
 #if _WIN32
 

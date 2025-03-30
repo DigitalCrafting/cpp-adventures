@@ -1,7 +1,7 @@
-#include "common/common_types.h"
-#include "common/common_file.h"
-#include "common/common_json.h"
-#include "common/common_haversine.h"
+#include "common/types.h"
+#include "common/file.h"
+#include "common/json.h"
+#include "common/haversine.h"
 
 namespace BaseParser {
     b32 IsJSONDigit(Buffer source, u64 at) {

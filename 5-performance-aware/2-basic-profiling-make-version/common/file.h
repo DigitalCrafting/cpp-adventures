@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common_types.h"
+#include "types.h"
 #include <cstddef>
 #include <cstdlib>
 #include <cstdio>

@@ -1,6 +1,6 @@
 #include <cstdio>
 
-#include "common/common_types.h"
+#include "common/types.h"
 #include "common/platform_metrics.h"
 
 int main(void) {

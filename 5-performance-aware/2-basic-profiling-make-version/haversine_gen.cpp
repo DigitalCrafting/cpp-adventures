@@ -3,10 +3,10 @@
 #include <cstdint>
 #include <cstring>
 
-#include "common/common_types.h"
-#include "common/common_random.h"
-#include "common/common_file.h"
-#include "common/common_haversine.h"
+#include "common/types.h"
+#include "common/random.h"
+#include "common/file.h"
+#include "common/haversine.h"
 
 void generate(int pairs, u64 seedValue, u64 clusterCountLeft, const char *methodName) {
     f64 maxAllowedX = 180;

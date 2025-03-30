@@ -2,9 +2,9 @@
 #include <functional>
 #include <sys/stat.h>
 
-#include "common/common_types.h"
-#include "common/common_file.h"
-#include "common/common_haversine.h"
+#include "common/types.h"
+#include "common/file.h"
+#include "common/haversine.h"
 #include "base_json_lookup_parser.cpp"
 
 static Buffer ReadEntireFile(char *filename) {

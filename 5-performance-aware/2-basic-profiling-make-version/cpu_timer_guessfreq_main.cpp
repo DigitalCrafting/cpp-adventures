@@ -1,7 +1,7 @@
 #include <cstdio>
 #include <cstdlib>
 
-#include "common/common_types.h"
+#include "common/types.h"
 #include "common/platform_metrics.h"
 
 int main(int argc, char **args) {
