@@ -12,3 +12,4 @@ typedef float f32;
 typedef double f64;
 
 #define U64Max UINT64_MAX
+#define ArrayCount(array) (sizeof(array)/sizeof((array)[0]))
