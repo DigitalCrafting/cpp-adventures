@@ -32,7 +32,7 @@ struct ProfileBlock {
         u64 elapsed = ReadCPUTimer() - startTsc;
 
         ProfileAnchor* anchor = GLOBAL_PROFILER.anchors + anchorIndex;
-        anchor->tscElapsed = elapsed;
+        anchor->tscElapsed += elapsed;
         ++anchor->hitCount;
         anchor->label = label;
     }
@@ -40,13 +40,13 @@ struct ProfileBlock {
 
 #define NameConcat2(A, B) A##B
 #define NameConcat(A, B) NameConcat2(A, B)
-#define TimeBlock(name) ProfileBlock NameConcat(Block, __LINE__)(name, __COUNTER__ + 1);
+#define TimeBlock(Name) ProfileBlock NameConcat(Block, __LINE__)(Name, __COUNTER__ + 1);
 #define TimeFunction TimeBlock(__func__)
 
 static void PrintTimeElapsed(u64 totalTSCElapsed, ProfileAnchor* anchor) {
     u64 elapsed = anchor->tscElapsed;
     f64 percent = 100.0 * ((f64)elapsed / (f64)totalTSCElapsed);
-    printf("  %s[%lu]: %lu (%.2f)\n", anchor->label, anchor->hitCount, elapsed, percent);
+    printf("  %s[%lu]: %lu (%.2f%%)\n", anchor->label, anchor->hitCount, elapsed, percent);
 }
 
 static void BeginProfile(void) {

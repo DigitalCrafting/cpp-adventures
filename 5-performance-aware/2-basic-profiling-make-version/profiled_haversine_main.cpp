@@ -63,7 +63,8 @@ int main(int argc, char **args) {
         return 1;
     }
 
-    HaversinePair *pairs = (HaversinePair*)malloc(maxPairCount * sizeof(HaversinePair));
+    Buffer parsedValues = AllocateBuffer(maxPairCount * sizeof(HaversinePair));
+    HaversinePair *pairs = (HaversinePair*)parsedValues.data; 
 
     u64 pairCount = BaseParser::ParseHaversinePairs(file, maxPairCount, pairs);
 
@@ -94,7 +95,9 @@ int main(int argc, char **args) {
         FreeBuffer(&answersFile);
     }
 
+    
 
+    FreeBuffer(&parsedValues);
     FreeBuffer(&file);
 
     EndAndPrintProfile();
