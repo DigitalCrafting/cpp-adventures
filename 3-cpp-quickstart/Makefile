@@ -63,6 +63,10 @@ sizes: create
 	$(COMPILER_CALL) src/sizes.cpp $(LDFLAGS) -o $(BUILD_DIR)/sizes.out
 	./build/sizes.out
 
+function_pointer: create 
+	$(COMPILER_CALL) src/function_pointer.cpp $(LDFLAGS) -o $(BUILD_DIR)/function_pointer.out
+	./build/function_pointer.out
+
 clean:
 	rm -fR $(BUILD_DIR)
 
@@ -77,4 +81,4 @@ $(BUILD_DIR)/%.o: $(SOURCE_DIR)/%.cc
 	$(COMPILER_CALL) -c $< -o $@
 
 
-.PHONY: all create build run clean sizes
+.PHONY: all create build run clean sizes function_pointer
