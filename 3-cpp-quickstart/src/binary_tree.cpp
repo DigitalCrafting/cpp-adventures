@@ -8,7 +8,7 @@ struct Node {
     Node(int val): value(val), left(nullptr), right(nullptr) {};
 
     int depth() {
-        int dLeft = 1;
+        int dLeft = 0;
         int dRight = 0;
 
         if (left) 
@@ -17,13 +17,13 @@ struct Node {
         if (right)
             dRight = right->depth();
 
-        return (dLeft > dRight ? dLeft : dRight);
+        return 1 + (dLeft > dRight ? dLeft : dRight);
     }
 
 };
 
 void print(Node *root) {
-    int depth = root->depth();
+    int depth = root->depth() - 1; // -1 to start from 0
 
     fprintf(stdout, "Depth: %d\n", depth);
 }
@@ -38,6 +38,8 @@ int main(int argc, char** args) {
 
     root->left = left;
     root->right = right;
+
+    left->left = new Node(4);
 
     print(root);
 
