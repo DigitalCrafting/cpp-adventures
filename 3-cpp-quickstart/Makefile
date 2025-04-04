@@ -67,6 +67,10 @@ function_pointer: create
 	$(COMPILER_CALL) src/function_pointer.cpp $(LDFLAGS) -o $(BUILD_DIR)/function_pointer.out
 	./build/function_pointer.out
 
+binary_tree: create 
+	$(COMPILER_CALL) src/binary_tree.cpp $(LDFLAGS) -o $(BUILD_DIR)/binary_tree.out
+	./build/binary_tree.out
+
 clean:
 	rm -fR $(BUILD_DIR)
 
@@ -81,4 +85,4 @@ $(BUILD_DIR)/%.o: $(SOURCE_DIR)/%.cc
 	$(COMPILER_CALL) -c $< -o $@
 
 
-.PHONY: all create build run clean sizes function_pointer
+.PHONY: all create build run clean sizes function_pointer function_pointer
