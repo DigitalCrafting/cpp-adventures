@@ -1,4 +1,6 @@
+#include <cmath>
 #include <cstdio>
+#include <cstdlib>
 
 struct Node {
     int value;
@@ -28,7 +30,7 @@ struct LinkedList {
     }
 
     int getAt(int index) {
-        if (index > length - 1) {
+        if (index > length - 1 || index < 0) {
             return -1;
         }
 
@@ -39,6 +41,36 @@ struct LinkedList {
         }
 
         return searched->value;
+    }
+
+    int removeAt(int index) {
+        if (index > length - 1 || index < 0) {
+            return NAN;
+        }
+
+        if (index == 0) {
+            Node* temp = root;
+            root = root->next;
+            length--;
+            int val = temp->value;
+            free(temp);
+            return val;
+        }
+
+        Node * oneBefore = root;
+        for (int i = 0; i < index - 1; i++) {
+            oneBefore = oneBefore->next;
+        }
+
+        Node* temp = oneBefore->next;
+        if (temp == current) {
+            current = oneBefore;
+        }
+        oneBefore->next = temp->next;
+        int val = temp->value;
+        free(temp);
+        length--;
+        return val;    
     }
 
     int getSize() {
@@ -57,6 +89,14 @@ int main() {
 
     printf("List size: %d\n", list.getSize());
     printf("5-th element: %d\n", list.getAt(4));
+
+    list.removeAt(-2);
+    list.removeAt(8);
+    int third = list.removeAt(2);
+    printf("After removing element at index 2 (%d)\n", third);
+    printf("List size: %d\n", list.getSize());
+    printf("5-th element: %d\n", list.getAt(4));
+
 
     return 0;
 }
