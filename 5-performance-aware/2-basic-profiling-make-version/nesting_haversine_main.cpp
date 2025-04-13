@@ -4,8 +4,8 @@
 #include "common/types.h"
 #include "common/file.h"
 #include "common/haversine.h"
-#include "timeblock_json_lookup_parser.cpp"
-#include "profiler/simple_profiler.h"
+#include "nesting_timeblock_json_lookup_parser.cpp"
+#include "profiler/nesting_profiler.h"
 
 static Buffer ReadEntireFile(char *filename) {
     TimeFunction;
