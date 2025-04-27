@@ -5,7 +5,7 @@
 #include "GLFW/glfw3.h"
 
 // GLFW error callback
-void glfw_error_callback(int error, const char* description) {
+void glfw_error_callback(int error, const char *description) {
     std::cerr << "GLFW Error " << error << ": " << description << std::endl;
 }
 
@@ -22,13 +22,13 @@ int main() {
         return -1;
     }
 
-    // Configure GLFW for OpenGL 3.3 Core Profile
+    // Configure GLFW for OpenGL 4.6 Core Profile
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     // Create GLFW window
-    GLFWwindow* window = glfwCreateWindow(800, 600, "Minimal ImGui Example", nullptr, nullptr);
+    GLFWwindow *window = glfwCreateWindow(800, 600, "Minimal ImGui Example", nullptr, nullptr);
     if (!window) {
         std::cerr << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -50,18 +50,91 @@ int main() {
     // Print OpenGL version
     std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
 
-    // Set up ImGui context
+    // Triangle vertices
+    float vertices[] = {
+            -0.5f, -0.5f, 0.0f,
+            0.5f, -0.5f, 0.0f,
+            0.0f, 0.5f, 0.0f
+    };
+
+    // Generate Vertex Buffer Object
+    unsigned int VBO;
+    glGenBuffers(1, &VBO);
+    // Bind VBO to be Array Buffer
+    // This also means, following buffer operations will be performed on the bound buffer,
+    // In this case: buffer with id '1'
+    glBindBuffer(GL_ARRAY_BUFFER, 1);
+    /*
+     * Options of glBufferData usage:
+     * - GL_STREAM_DRAW - data is set once, and used byt the GPU at most few times,
+     * - GL_STATIC_DRAW - data is set once and used many times,
+     * - GL_DYNAMIC_DRAW - data changes a lot and is used many times.
+     * */
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    /* Vertex shader */
+    // Define source
+    const char* vertexShaderSource = "#version 330 core\n"
+                               "layout (location = 0) in vec3 aPos;\n"
+                               "void main()\n"
+                               "{\n gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0); \n}\n";
+    unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+    glCompileShader(vertexShader);
+
+    int success;
+    char infoLog[512];
+    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+
+    if (!success) {
+        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+    }
+
+    /* Fragment shader */
+    const char* fragmentShaderSource = "#version 330 core\n"
+                                       "out vec4 FragColor\n"
+                                       "void main()\n"
+                                       "{\n FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n }\n";
+    unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+    glCompileShader(fragmentShader);
+    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+
+    if (!success) {
+        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+    }
+
+    /* Final shader program */
+    unsigned int shaderProgram = glCreateProgram();
+    glAttachShader(shaderProgram, vertexShader);
+    glAttachShader(shaderProgram, fragmentShader);
+    glLinkProgram(shaderProgram);
+
+    glGetShaderiv(shaderProgram, GL_COMPILE_STATUS, &success);
+
+    if (!success) {
+        glGetShaderInfoLog(shaderProgram, 512, NULL, infoLog);
+        std::cout << "ERROR::SHADER::PROGRAM::COMPILATION_FAILED\n" << infoLog << std::endl;
+    }
+
+    /* Use the shader */
+    glUseProgram(shaderProgram);
+    // And remove individual shaders, they are not needed anymore - they are already stored in the GPU memory
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+
+    // TODO Next: Linking Vertex Attributes
 
     // Main loop
     while (!glfwWindowShouldClose(window)) {
-        // Poll events
-        glfwPollEvents();
 
         // Start ImGui frame
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Clear background
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // Swap buffers
+        glfwPollEvents();
         glfwSwapBuffers(window);
     }
 
