@@ -112,15 +112,13 @@ int main() {
     glAttachShader(shaderProgram, fragmentShader);
     glLinkProgram(shaderProgram);
 
-    glGetShaderiv(shaderProgram, GL_COMPILE_STATUS, &success);
+    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
 
     if (!success) {
         glGetShaderInfoLog(shaderProgram, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::PROGRAM::COMPILATION_FAILED\n" << infoLog << std::endl;
+        std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
     }
 
-    /* Use the shader */
-    glUseProgram(shaderProgram);
     // And remove individual shaders, they are not needed anymore - they are already stored in the GPU memory
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
@@ -150,11 +148,15 @@ int main() {
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
-        glfwPollEvents();
         glfwSwapBuffers(window);
+        glfwPollEvents();
     }
 
     // Cleanup
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    glDeleteProgram(shaderProgram);
+
     glfwDestroyWindow(window);
     glfwTerminate();
 
