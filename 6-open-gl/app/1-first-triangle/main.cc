@@ -93,7 +93,7 @@ int main() {
 
     /* Fragment shader */
     const char* fragmentShaderSource = "#version 330 core\n"
-                                       "out vec4 FragColor\n"
+                                       "out vec4 FragColor;\n"
                                        "void main()\n"
                                        "{\n FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n }\n";
     unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -125,7 +125,19 @@ int main() {
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
-    // TODO Next: Linking Vertex Attributes
+    // Linking Vertex Attributes
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    // Generate Vertex Array Object
+    unsigned int VAO;
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
 
     // Main loop
     while (!glfwWindowShouldClose(window)) {
@@ -133,6 +145,10 @@ int main() {
         // Start ImGui frame
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Clear background
         glClear(GL_COLOR_BUFFER_BIT);
+
+        glUseProgram(shaderProgram);
+        glBindVertexArray(VAO);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
 
         glfwPollEvents();
         glfwSwapBuffers(window);
