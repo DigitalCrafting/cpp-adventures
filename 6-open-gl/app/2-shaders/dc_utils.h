@@ -20,6 +20,14 @@ struct OpenGlShader {
         }
     }
 
+    /*
+     * Production ready code should use RAII for cleanup
+     *
+     * ~OpenGlShader() {
+     *     glDeleteShader(id);
+     * }
+    */
+
     void clean() const {
         glDeleteShader(id);
     }
