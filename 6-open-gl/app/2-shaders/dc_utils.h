@@ -41,7 +41,7 @@ struct OpenGlProgram {
         glGetProgramiv(id, GL_LINK_STATUS, &success);
 
         if (!success) {
-            glGetShaderInfoLog(id, 512, NULL, infoLog);
+            glGetProgramInfoLog(id, 512, NULL, infoLog);
             std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
         }
 

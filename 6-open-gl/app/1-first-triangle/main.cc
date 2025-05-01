@@ -126,7 +126,7 @@ int main() {
     glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
 
     if (!success) {
-        glGetShaderInfoLog(shaderProgram, 512, NULL, infoLog);
+        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
         std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
     }
 
