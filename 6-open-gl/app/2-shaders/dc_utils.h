@@ -1,6 +1,7 @@
 #ifndef CPPPROJECTTEMPLATE_DC_UTILS_H
 #define CPPPROJECTTEMPLATE_DC_UTILS_H
 
+#include <iostream>
 #include "glad/gl.h"
 #include "GLFW/glfw3.h"
 
