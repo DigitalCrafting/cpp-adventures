@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cmath>
 
 #include "config.hpp"
 #include "dc_utils.h"
@@ -93,9 +94,10 @@ int main() {
     /* Fragment shader */
     const char* fragmentShaderSource = "#version 330 core\n"
                                        "out vec4 FragColor;\n"
-                                       "in vec4 vertexColor;"
+                                       "in vec4 vertexColor;\n"
+                                       "uniform vec4 ourColor;\n"
                                        "void main()\n"
-                                       "{\n FragColor = vertexColor;\n }\n";
+                                       "{\n FragColor = ourColor;\n }\n";
 
 
     OpenGlProgram shaderProgram{vertexShaderSource, fragmentShaderSource};
@@ -127,7 +129,12 @@ int main() {
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Clear background
         glClear(GL_COLOR_BUFFER_BIT);
 
+        float timeValue = glfwGetTime();
+        float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
+        int vertexColorLocation = glGetUniformLocation(shaderProgram.id, "ourColor");
+
         shaderProgram.use();
+        glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
 
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
