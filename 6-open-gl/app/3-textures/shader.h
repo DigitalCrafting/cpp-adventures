@@ -20,7 +20,7 @@ std::string readFile(const char *path) {
         stream << file.rdbuf();
         file.close();
         content = stream.str();
-    } catch (std::ifstream::failure e) {
+    } catch (std::ifstream::failure &e) {
         std::cout << "ERROR::FILE::COULD_NOT_READ_FILE::" << path << "\n";
     }
 

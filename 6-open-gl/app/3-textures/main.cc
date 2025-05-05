@@ -1,8 +1,8 @@
 #include <iostream>
-#include <cmath>
-
+#define STB_IMAGE_IMPLEMENTATION
 #include "config.hpp"
 #include "shader.h"
+#include "texture.h"
 #include "env.h"
 
 // GLFW error callback
@@ -51,17 +51,21 @@ int main() {
     // Print OpenGL version
     std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
 
-    // Triangle vertices
+    // Square vertices
     float vertices[] = {
-            // position              // colors
-        0.0f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // top
-        0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // bottom right
-        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f // bottom left
+            // positions          // colors           // texture coords
+            0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
+            0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
+            -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
+            -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left
     };
 
     unsigned int indices[] = {
-        0, 2, 1,
+            0, 1, 3,
+            1, 2, 3
     };
+
+    OpenGlTexture texture{TexturePath.c_str()};
 
     // Generate Vertex Buffer Object
     unsigned int VBO;
@@ -83,7 +87,7 @@ int main() {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-    OpenGlProgram shaderProgram{VertexShaderPath, FragmentShaderPath};
+    OpenGlProgram shaderProgram{VertexShaderPath.c_str(), FragmentShaderPath.c_str()};
 
     // Generate Vertex Array Object
     unsigned int VAO;
@@ -96,11 +100,14 @@ int main() {
 
     // Linking Vertex Attributes
     // Linking position
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,6 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     // Linking color
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE,6 * sizeof(float), (void*)(3*sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE,8 * sizeof(float), (void*)(3*sizeof(float)));
     glEnableVertexAttribArray(1);
+    // Linking texture
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6* sizeof(float)));
+    glEnableVertexAttribArray(2);
 
     // Wireframe mode
 //    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -118,6 +125,7 @@ int main() {
 //        float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
 //        int vertexColorLocation = glGetUniformLocation(shaderProgram.id, "ourColor");
 
+        texture.use();
         shaderProgram.use();
 //        glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
 
