@@ -83,6 +83,10 @@ struct OpenGlProgram {
         fs.clean();
     }
 
+    void setInt(const std::string &name, int value) const {
+        glUniform1i(glGetUniformLocation(id, name.c_str()), value);
+    }
+
     void use() const {
         glUseProgram(id);
     }

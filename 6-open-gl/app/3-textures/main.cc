@@ -1,5 +1,7 @@
 #include <iostream>
 #define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 #include "config.hpp"
 #include "shader.h"
 #include "texture.h"
@@ -53,7 +55,7 @@ int main() {
 
     // Square vertices
     float vertices[] = {
-            // positions          // colors           // texture coords
+            // positions          // colors           // boxTexture coords
             0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
             0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
             -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
@@ -65,7 +67,10 @@ int main() {
             1, 2, 3
     };
 
-    OpenGlTexture texture{TexturePath.c_str()};
+    OpenGlTexture boxTexture{TexturePath.c_str(), TextureType::JPG};
+    stbi_set_flip_vertically_on_load(true);
+    OpenGlTexture faceTexture{SecondTexturePath.c_str(), TextureType::PNG};
+    stbi_set_flip_vertically_on_load(false);
 
     // Generate Vertex Buffer Object
     unsigned int VBO;
@@ -105,7 +110,7 @@ int main() {
     // Linking color
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE,8 * sizeof(float), (void*)(3*sizeof(float)));
     glEnableVertexAttribArray(1);
-    // Linking texture
+    // Linking boxTexture
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6* sizeof(float)));
     glEnableVertexAttribArray(2);
 
@@ -113,6 +118,10 @@ int main() {
 //    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     // Normal mode
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+    shaderProgram.use();
+    shaderProgram.setInt("texture1", 0);
+    shaderProgram.setInt("texture2", 1);
 
     // Main loop
     while (!glfwWindowShouldClose(window)) {
@@ -125,7 +134,8 @@ int main() {
 //        float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
 //        int vertexColorLocation = glGetUniformLocation(shaderProgram.id, "ourColor");
 
-        texture.use();
+        boxTexture.use(GL_TEXTURE0);
+        faceTexture.use(GL_TEXTURE1);
         shaderProgram.use();
 //        glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
 
