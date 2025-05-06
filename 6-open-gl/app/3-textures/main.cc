@@ -12,6 +12,26 @@ void glfw_error_callback(int error, const char *description) {
     std::cerr << "GLFW Error " << error << ": " << description << std::endl;
 }
 
+static float mixValue = 0.2f;
+
+void processInput(GLFWwindow *window) {
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+        glfwSetWindowShouldClose(window, true);
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+        mixValue += 0.001f;
+        if (mixValue >= 1.0f) {
+            mixValue = 1.0f;
+        }
+    } else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+        mixValue -= 0.001f;
+        if (mixValue <= 0.0f) {
+            mixValue = 0.0f;
+        }
+    }
+}
+
 int main() {
     std::cout << project_name << '\n';
     std::cout << project_version << '\n';
@@ -125,6 +145,7 @@ int main() {
 
     // Main loop
     while (!glfwWindowShouldClose(window)) {
+        processInput(window);
 
         // Start ImGui frame
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Clear background
@@ -137,6 +158,7 @@ int main() {
         boxTexture.use(GL_TEXTURE0);
         faceTexture.use(GL_TEXTURE1);
         shaderProgram.use();
+        shaderProgram.setFloat("mixValue", mixValue);
 //        glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
 
         glBindVertexArray(VAO);
