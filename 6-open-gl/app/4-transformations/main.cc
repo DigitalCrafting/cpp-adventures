@@ -7,6 +7,10 @@
 #include "texture.h"
 #include "env.h"
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 // GLFW error callback
 void glfw_error_callback(int error, const char *description) {
     std::cerr << "GLFW Error " << error << ": " << description << std::endl;
@@ -143,6 +147,11 @@ int main() {
     shaderProgram.setInt("texture1", 0);
     shaderProgram.setInt("texture2", 1);
 
+    // Math
+    // glm::mat4 trans = glm::mat4(1.0f);
+    // trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    // trans = glm::scale(trans, glm::vec3(0.5f, 0.5f, 0.5f));
+
     // Main loop
     while (!glfwWindowShouldClose(window)) {
         processInput(window);
@@ -155,10 +164,15 @@ int main() {
 //        float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
 //        int vertexColorLocation = glGetUniformLocation(shaderProgram.id, "ourColor");
 
+        glm::mat4 trans = glm::mat4(1.0f);
+        trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
+        trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+
         boxTexture.use(GL_TEXTURE0);
         faceTexture.use(GL_TEXTURE1);
         shaderProgram.use();
         shaderProgram.setFloat("mixValue", mixValue);
+        shaderProgram.setMat4("transform", glm::value_ptr(trans));
 //        glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
 
         glBindVertexArray(VAO);

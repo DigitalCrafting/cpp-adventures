@@ -8,6 +8,7 @@
 #include <filesystem>
 #include "glad/gl.h"
 #include "GLFW/glfw3.h"
+#include <glm/glm.hpp>
 
 std::string readFile(const char *path) {
     std::string content;
@@ -89,6 +90,10 @@ struct OpenGlProgram {
 
     void setFloat(const std::string &name, float value) const {
         glUniform1f(glGetUniformLocation(id, name.c_str()), value);
+    }
+
+    void setMat4(const std::string &name, GLfloat* trans) {
+        glUniformMatrix4fv(glGetUniformLocation(id, name.c_str()), 1, GL_FALSE, trans);
     }
 
     void use() const {
