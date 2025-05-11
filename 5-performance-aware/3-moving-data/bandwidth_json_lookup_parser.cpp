@@ -2,7 +2,7 @@
 #include "common/file.h"
 #include "common/json.h"
 #include "common/haversine.h"
-#include "profiler/final_profiler.h"
+#include "profiler/bandwidth_profiler.h"
 
 namespace BaseParser {
     b32 IsJSONDigit(Buffer source, u64 at) {

@@ -78,7 +78,7 @@ static void PrintTimeElapsed(u64 totalElapsedTime, u64 timeFreq, ProfileAnchor* 
         printf("    %.3fmb at %.2fgb/s", megabytes, gbPerSecond);
     }
 
-    printf("\n")
+    printf("\n");
 }
 
 static void PrintAnchorData(u64 totalElapsedTime, u64 timeFreq) {
@@ -92,12 +92,12 @@ static void PrintAnchorData(u64 totalElapsedTime, u64 timeFreq) {
 
 #define NameConcat2(A, B) A##B
 #define NameConcat(A, B) NameConcat2(A, B)
-#define TimeBlock(Name) ProfileBlock NameConcat(Block, __LINE__)(Name, __COUNTER__ + 1);
+#define TimeBandwidth(Name, ByteCount) ProfileBlock NameConcat(Block, __LINE__)(Name, __COUNTER__ + 1, ByteCount);
 #define ProfilerEndOfCompilationUnit static_assert(__COUNTER__ < ArrayCount(GLOBAL_PROFILE_ANCHORS), "Number of available profile points exceeded")
 
 #else
 
-#define TimeBlock(...)
+#define TimeBandwidth(...)
 #define PrintAnchorData(...)
 #define ProfilerEndOfCompilationUnit
 
@@ -109,6 +109,7 @@ struct Profiler {
 };
 static Profiler GLOBAL_PROFILER;
 
+#define TimeBlock(Name) TimeBandwidth(Name, 0)
 #define TimeFunction TimeBlock(__func__)
 
 static void BeginProfile(void) {

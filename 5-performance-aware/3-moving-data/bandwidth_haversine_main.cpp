@@ -4,7 +4,8 @@
 #include "common/types.h"
 #include "common/file.h"
 #include "common/haversine.h"
-#include "final_timeblock_json_lookup_parser.cpp"
+#include "bandwidth_json_lookup_parser.cpp"
+#include "profiler/bandwidth_profiler.h"
 
 static Buffer ReadEntireFile(char *filename) {
     TimeFunction;
@@ -17,6 +18,7 @@ static Buffer ReadEntireFile(char *filename) {
 
         result = AllocateBuffer(statStruct.st_size);
         if (result.data) {
+            TimeBandwidth("fread", result.count);
             if(fread(result.data, result.count, 1, file) != 1) {
                 fprintf(stderr, "ERROR: Unable to read \"%s\".\n", filename);
                 FreeBuffer(&result);
@@ -32,7 +34,7 @@ static Buffer ReadEntireFile(char *filename) {
 }
 
 static f64 SumHaversineDistances(u64 pairCount, HaversinePair* pairs) {
-    TimeFunction;
+    TimeBandwidth(__func__, pairCount*sizeof(HaversinePair));
     f64 sum = 0;
     f64 sumCoef = 1 / (f64)pairCount;
     for (u64 pairIndex = 0; pairIndex < pairCount; ++pairIndex) {
