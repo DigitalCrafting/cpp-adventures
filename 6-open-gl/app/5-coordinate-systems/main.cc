@@ -54,8 +54,11 @@ int main() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+    int width = 800, height = 600;
+
+
     // Create GLFW window
-    GLFWwindow *window = glfwCreateWindow(800, 600, "Minimal ImGui Example", nullptr, nullptr);
+    GLFWwindow *window = glfwCreateWindow(width, height, "Minimal ImGui Example", nullptr, nullptr);
     if (!window) {
         std::cerr << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -153,7 +156,8 @@ int main() {
     // trans = glm::scale(trans, glm::vec3(0.5f, 0.5f, 0.5f));
 
     // Coordinate system
-    glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, 0.1f, 100.0f);
+    glm::mat4 ortho = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, 0.1f, 100.0f);
+    glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)width/(float)height, 0.1f, 100.0f);
 
     // Main loop
     while (!glfwWindowShouldClose(window)) {
