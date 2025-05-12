@@ -152,6 +152,9 @@ int main() {
     // trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
     // trans = glm::scale(trans, glm::vec3(0.5f, 0.5f, 0.5f));
 
+    // Coordinate system
+    glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, 0.1f, 100.0f);
+
     // Main loop
     while (!glfwWindowShouldClose(window)) {
         processInput(window);
