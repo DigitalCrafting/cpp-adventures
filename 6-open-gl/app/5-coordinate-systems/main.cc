@@ -156,8 +156,14 @@ int main() {
     // trans = glm::scale(trans, glm::vec3(0.5f, 0.5f, 0.5f));
 
     // Coordinate system
-    glm::mat4 ortho = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, 0.1f, 100.0f);
-    glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)width/(float)height, 0.1f, 100.0f);
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+
+    glm::mat4 view = glm::mat4(1.0f);
+    // note that we're translating the scene in the reverse direction of where we want to move
+    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+
+    glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)width/(float)height, 0.1f, 100.0f);
 
     // Main loop
     while (!glfwWindowShouldClose(window)) {
@@ -180,6 +186,9 @@ int main() {
         shaderProgram.use();
         shaderProgram.setFloat("mixValue", mixValue);
         shaderProgram.setMat4("transform", glm::value_ptr(trans));
+        shaderProgram.setMat4("model", glm::value_ptr(model));
+        shaderProgram.setMat4("view", glm::value_ptr(view));
+        shaderProgram.setMat4("projection", glm::value_ptr(projection));
 //        glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
 
         glBindVertexArray(VAO);
