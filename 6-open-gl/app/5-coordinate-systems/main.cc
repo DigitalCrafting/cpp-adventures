@@ -81,119 +81,114 @@ int main() {
     std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
 
     // Square vertices
+//    float vertices[] = {
+//            // positions          // colors           // boxTexture coords
+//            0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
+//            0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
+//            -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
+//            -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left
+//    };
+
     float vertices[] = {
-            // positions          // colors           // boxTexture coords
-            0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
-            0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
-            -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
-            -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left
+            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+            0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+            0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+            0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+            0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+            0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+            0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+            -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+            -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+            -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+            -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+            0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+            0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+            0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+            0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+            0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+            0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+            0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+            0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+            0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+            0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+            0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+            0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+            -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
     };
 
-    unsigned int indices[] = {
-            0, 1, 3,
-            1, 2, 3
-    };
-
-    OpenGlTexture boxTexture{TexturePath.c_str(), TextureType::JPG};
-    stbi_set_flip_vertically_on_load(true);
-    OpenGlTexture faceTexture{SecondTexturePath.c_str(), TextureType::PNG};
-    stbi_set_flip_vertically_on_load(false);
-
-    // Generate Vertex Buffer Object
     unsigned int VBO;
     glGenBuffers(1, &VBO);
-    // Bind VBO to be Array Buffer
-    // This also means, following buffer operations will be performed on the bound buffer,
-    // In this case: buffer with id '1'
     glBindBuffer(GL_ARRAY_BUFFER, 1);
-    /*
-     * Options of glBufferData usage:
-     * - GL_STREAM_DRAW - data is set once, and used byt the GPU at most few times,
-     * - GL_STATIC_DRAW - data is set once and used many times,
-     * - GL_DYNAMIC_DRAW - data changes a lot and is used many times.
-     * */
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    unsigned int EBO;
-    glGenBuffers(1, &EBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     OpenGlProgram shaderProgram{VertexShaderPath.c_str(), FragmentShaderPath.c_str()};
 
-    // Generate Vertex Array Object
     unsigned int VAO;
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    // Linking Vertex Attributes
-    // Linking position
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,8 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    // Linking color
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE,8 * sizeof(float), (void*)(3*sizeof(float)));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE,5 * sizeof(float), (void*)(3*sizeof(float)));
     glEnableVertexAttribArray(1);
-    // Linking boxTexture
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6* sizeof(float)));
-    glEnableVertexAttribArray(2);
 
-    // Wireframe mode
-//    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    // Normal mode
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glEnable(GL_DEPTH_TEST);
+
+    stbi_set_flip_vertically_on_load(true);
+    OpenGlTexture boxTexture{TexturePath.c_str(), TextureType::JPG};
+    OpenGlTexture faceTexture{SecondTexturePath.c_str(), TextureType::PNG};
 
     shaderProgram.use();
     shaderProgram.setInt("texture1", 0);
     shaderProgram.setInt("texture2", 1);
 
-    // Math
-    // glm::mat4 trans = glm::mat4(1.0f);
-    // trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-    // trans = glm::scale(trans, glm::vec3(0.5f, 0.5f, 0.5f));
-
-    // Coordinate system
-    glm::mat4 model = glm::mat4(1.0f);
-    model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-
-    glm::mat4 view = glm::mat4(1.0f);
-    // note that we're translating the scene in the reverse direction of where we want to move
-    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-
-    glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)width/(float)height, 0.1f, 100.0f);
-
-    // Main loop
     while (!glfwWindowShouldClose(window)) {
         processInput(window);
 
         // Start ImGui frame
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Clear background
-        glClear(GL_COLOR_BUFFER_BIT);
-
-//        float timeValue = glfwGetTime();
-//        float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
-//        int vertexColorLocation = glGetUniformLocation(shaderProgram.id, "ourColor");
-
-        glm::mat4 trans = glm::mat4(1.0f);
-        trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
-        trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f); // Clear background
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         boxTexture.use(GL_TEXTURE0);
         faceTexture.use(GL_TEXTURE1);
         shaderProgram.use();
+
+        glm::mat4 model = glm::mat4(1.0f);
+        glm::mat4 view = glm::mat4(1.0f);
+        glm::mat4 projection = glm::mat4(1.0f);
+
+        model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f));
+        view  = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+        projection = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 100.0f);
+
         shaderProgram.setFloat("mixValue", mixValue);
-        shaderProgram.setMat4("transform", glm::value_ptr(trans));
         shaderProgram.setMat4("model", glm::value_ptr(model));
         shaderProgram.setMat4("view", glm::value_ptr(view));
         shaderProgram.setMat4("projection", glm::value_ptr(projection));
-//        glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
 
         glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        glBindVertexArray(0);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
