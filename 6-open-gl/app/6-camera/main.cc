@@ -18,6 +18,9 @@ void glfw_error_callback(int error, const char *description) {
     std::cerr << "GLFW Error " << error << ": " << description << std::endl;
 }
 
+float deltaTime = 0.0f;
+float lastFrame = 0.0f;
+
 static float mixValue = 0.2f;
 static glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f,  3.0f);
 static glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -40,7 +43,7 @@ void processInput(GLFWwindow *window) {
         }
     }
 
-    const float cameraSpeed = 0.01f;
+    const float cameraSpeed = 2.5f * deltaTime;
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
         cameraPos += cameraSpeed * cameraFront;
     }
@@ -196,20 +199,6 @@ int main() {
     shaderProgram.setInt("texture1", 0);
     shaderProgram.setInt("texture2", 1);
 
-//    glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
-//    glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
-//    glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);
-
-//    glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-//    glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));
-
-//    glm::vec3 cameraUp = glm::cross(cameraDirection, cameraRight);
-
-//    glm::mat4 view;
-//    view = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f),
-//                       glm::vec3(0.0f, 0.0f, 0.0f),
-//                       glm::vec3(0.0f, 1.0f, 0.0f));
-
     while (!glfwWindowShouldClose(window)) {
         processInput(window);
 
@@ -217,31 +206,26 @@ int main() {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f); // Clear background
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        float currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+
         boxTexture.use(GL_TEXTURE0);
         faceTexture.use(GL_TEXTURE1);
         shaderProgram.use();
 
-//        glm::mat4 model = glm::mat4(1.0f);
-//        glm::mat4 view = glm::mat4(1.0f);
         glm::mat4 projection = glm::mat4(1.0f);
 
-//        model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f));
-//        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-//        const float radius = 10.0f;
-//        float camX = sin(glfwGetTime()) * radius;
-//        float camZ = cos(glfwGetTime()) * radius;
         glm::mat4 view;
         view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
         projection = glm::perspective(glm::radians(45.0f), (float) width / (float) height, 0.1f, 100.0f);
 
         shaderProgram.setFloat("mixValue", mixValue);
-//        shaderProgram.setMat4("model", glm::value_ptr(model));
         shaderProgram.setMat4("view", glm::value_ptr(view));
         shaderProgram.setMat4("projection", glm::value_ptr(projection));
 
         glBindVertexArray(VAO);
-//        glDrawArrays(GL_TRIANGLES, 0, 36);
         glBindVertexArray(VAO);
         for (unsigned int i = 0; i < 10; i++) {
             glm::mat4 model = glm::mat4(1.0f);
