@@ -26,7 +26,7 @@ static glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f,  3.0f);
 static glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 static glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);
 
-static float lastX = 400.0f, lastY = 300.0f, yaw = -90.0f, pitch = 0.0f;
+static float lastX = 400.0f, lastY = 300.0f, yaw = -90.0f, pitch = 0.0f, fov = 45.0f;
 static bool firstMouse = true;
 
 void mouseCallback(GLFWwindow* window, double xPosIn, double yPosIn) {
@@ -63,6 +63,16 @@ void mouseCallback(GLFWwindow* window, double xPosIn, double yPosIn) {
     direction.y = sin(glm::radians(pitch));
     direction.z = sin(glm::radians(yaw) * cos(glm::radians(pitch)));
     cameraFront = glm::normalize(direction);
+}
+
+void scrollCallback(GLFWwindow* window, double xOffset, double yOffset) {
+    fov -= (float) yOffset;
+    if (fov < 1.0f) {
+        fov = 1.0f;
+    }
+    if (fov > 45.0f) {
+        fov = 45.0f;
+    }
 }
 
 void processInput(GLFWwindow *window) {
@@ -240,6 +250,7 @@ int main() {
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetCursorPosCallback(window, mouseCallback);
+    glfwSetScrollCallback(window, scrollCallback);
 
     while (!glfwWindowShouldClose(window)) {
         processInput(window);
@@ -261,7 +272,7 @@ int main() {
         glm::mat4 view;
         view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
-        projection = glm::perspective(glm::radians(45.0f), (float) width / (float) height, 0.1f, 100.0f);
+        projection = glm::perspective(glm::radians(fov), (float) width / (float) height, 0.1f, 100.0f);
 
         shaderProgram.setFloat("mixValue", mixValue);
         shaderProgram.setMat4("view", glm::value_ptr(view));
