@@ -7,6 +7,7 @@
 #include "config.hpp"
 #include "shader.h"
 #include "texture.h"
+#include "camera.h"
 #include "env.h"
 
 #include <glm/glm.hpp>
@@ -22,56 +23,18 @@ static float deltaTime = 0.0f;
 static float lastFrame = 0.0f;
 
 static float mixValue = 0.2f;
-static glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f,  3.0f);
-static glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-static glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);
 
-static float lastX = 400.0f, lastY = 300.0f, yaw = -90.0f, pitch = 0.0f, fov = 45.0f;
-static bool firstMouse = true;
-
-void mouseCallback(GLFWwindow* window, double xPosIn, double yPosIn) {
-    float xPos = static_cast<float>(xPosIn);
-    float yPos = static_cast<float>(yPosIn);
-
-    if (firstMouse) {
-        lastX = xPos;
-        lastY = yPos;
-        firstMouse = false;
+void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
+    OpenGlCamera* camera = static_cast<OpenGlCamera*>(glfwGetWindowUserPointer(window));
+    if (camera) {
+        camera->mouseCallback(xpos, ypos);
     }
-
-    float xOffset = xPos - lastX;
-    float yOffset = lastY - yPos;
-    lastX = xPos;
-    lastY = yPos;
-
-    float sensitivity = 0.1f;
-    xOffset *= sensitivity;
-    yOffset *= sensitivity;
-
-    yaw += xOffset;
-    pitch += yOffset;
-
-    if (pitch > 89.0f) {
-        pitch = 89.0f;
-    }
-    if (pitch < -89.0f) {
-        pitch = -89.0f;
-    }
-
-    glm::vec3 direction;
-    direction.x = cos(glm::radians(yaw) * cos(glm::radians(pitch)));
-    direction.y = sin(glm::radians(pitch));
-    direction.z = sin(glm::radians(yaw) * cos(glm::radians(pitch)));
-    cameraFront = glm::normalize(direction);
 }
 
-void scrollCallback(GLFWwindow* window, double xOffset, double yOffset) {
-    fov -= (float) yOffset;
-    if (fov < 1.0f) {
-        fov = 1.0f;
-    }
-    if (fov > 45.0f) {
-        fov = 45.0f;
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+    OpenGlCamera* camera = static_cast<OpenGlCamera*>(glfwGetWindowUserPointer(window));
+    if (camera) {
+        camera->scrollCallback(xoffset, yoffset);
     }
 }
 
@@ -90,20 +53,6 @@ void processInput(GLFWwindow *window) {
         if (mixValue <= 0.0f) {
             mixValue = 0.0f;
         }
-    }
-
-    const float cameraSpeed = 2.5f * deltaTime;
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        cameraPos += cameraSpeed * cameraFront;
-    }
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-        cameraPos -= cameraSpeed * cameraFront;
-    }
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-        cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-    }
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-        cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
     }
 }
 
@@ -248,9 +197,12 @@ int main() {
     shaderProgram.setInt("texture1", 0);
     shaderProgram.setInt("texture2", 1);
 
+    OpenGlCamera camera;
+    camera.attach(window);
+
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    glfwSetCursorPosCallback(window, mouseCallback);
-    glfwSetScrollCallback(window, scrollCallback);
+    glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetScrollCallback(window, scroll_callback);
 
     while (!glfwWindowShouldClose(window)) {
         processInput(window);
@@ -269,10 +221,10 @@ int main() {
 
         glm::mat4 projection = glm::mat4(1.0f);
 
-        glm::mat4 view;
-        view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+        camera.processInput(window, deltaTime);
+        glm::mat4 view = camera.getView();
 
-        projection = glm::perspective(glm::radians(fov), (float) width / (float) height, 0.1f, 100.0f);
+        projection = glm::perspective(glm::radians(camera.fov), (float) width / (float) height, 0.1f, 100.0f);
 
         shaderProgram.setFloat("mixValue", mixValue);
         shaderProgram.setMat4("view", glm::value_ptr(view));
