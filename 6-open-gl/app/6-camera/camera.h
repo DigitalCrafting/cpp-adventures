@@ -1,7 +1,16 @@
 #pragma once
+
+#include "GLFW/glfw3.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
+enum MovementDirection {
+    MOVE_UP,
+    MOVE_DOWN,
+    MOVE_LEFT,
+    MOVE_RIGHT,
+};
 
 struct OpenGlCamera {
     glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f,  3.0f);
@@ -14,18 +23,18 @@ struct OpenGlCamera {
         glfwSetWindowUserPointer(window, this);
     }
 
-    void processInput(GLFWwindow* window, float deltaTime) {
+    void moveCamera(MovementDirection direction, float deltaTime) {
         const float cameraSpeed = 5.0f * deltaTime;
-        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+        if (direction == MovementDirection::MOVE_UP) {
             cameraPos += cameraSpeed * cameraFront;
         }
-        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+        if (direction == MovementDirection::MOVE_DOWN) {
             cameraPos -= cameraSpeed * cameraFront;
         }
-        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+        if (direction == MovementDirection::MOVE_LEFT) {
             cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
         }
-        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+        if (direction == MovementDirection::MOVE_RIGHT) {
             cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
         }
     }

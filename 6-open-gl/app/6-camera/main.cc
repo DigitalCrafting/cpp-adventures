@@ -23,16 +23,17 @@ static float deltaTime = 0.0f;
 static float lastFrame = 0.0f;
 
 static float mixValue = 0.2f;
+OpenGlCamera camera;
 
-void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
-    OpenGlCamera* camera = static_cast<OpenGlCamera*>(glfwGetWindowUserPointer(window));
+void mouse_callback(GLFWwindow *window, double xpos, double ypos) {
+    OpenGlCamera *camera = static_cast<OpenGlCamera *>(glfwGetWindowUserPointer(window));
     if (camera) {
         camera->mouseCallback(xpos, ypos);
     }
 }
 
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
-    OpenGlCamera* camera = static_cast<OpenGlCamera*>(glfwGetWindowUserPointer(window));
+void scroll_callback(GLFWwindow *window, double xoffset, double yoffset) {
+    OpenGlCamera *camera = static_cast<OpenGlCamera *>(glfwGetWindowUserPointer(window));
     if (camera) {
         camera->scrollCallback(xoffset, yoffset);
     }
@@ -41,6 +42,19 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
 void processInput(GLFWwindow *window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+        camera.moveCamera(MovementDirection::MOVE_UP, deltaTime);
+    }
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+        camera.moveCamera(MovementDirection::MOVE_DOWN, deltaTime);
+    }
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+        camera.moveCamera(MovementDirection::MOVE_LEFT, deltaTime);
+    }
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+        camera.moveCamera(MovementDirection::MOVE_RIGHT, deltaTime);
     }
 
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
@@ -197,7 +211,6 @@ int main() {
     shaderProgram.setInt("texture1", 0);
     shaderProgram.setInt("texture2", 1);
 
-    OpenGlCamera camera;
     camera.attach(window);
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -205,15 +218,15 @@ int main() {
     glfwSetScrollCallback(window, scroll_callback);
 
     while (!glfwWindowShouldClose(window)) {
+        float currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+
         processInput(window);
 
         // Start ImGui frame
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f); // Clear background
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        float currentFrame = glfwGetTime();
-        deltaTime = currentFrame - lastFrame;
-        lastFrame = currentFrame;
 
         boxTexture.use(GL_TEXTURE0);
         faceTexture.use(GL_TEXTURE1);
@@ -221,7 +234,6 @@ int main() {
 
         glm::mat4 projection = glm::mat4(1.0f);
 
-        camera.processInput(window, deltaTime);
         glm::mat4 view = camera.getView();
 
         projection = glm::perspective(glm::radians(camera.fov), (float) width / (float) height, 0.1f, 100.0f);
