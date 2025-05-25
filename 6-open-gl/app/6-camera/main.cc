@@ -18,25 +18,38 @@
 void glfw_error_callback(int error, const char *description) {
     std::cerr << "GLFW Error " << error << ": " << description << std::endl;
 }
+int windowWidth = 800, windowHeight = 600;
 
 static float deltaTime = 0.0f;
 static float lastFrame = 0.0f;
 
 static float mixValue = 0.2f;
-OpenGlCamera camera;
+OpenGlCamera camera{glm::vec3(0.0f, 0.0f, 3.0f)};
+float lastX = windowWidth / 2.0f;
+float lastY = windowHeight / 2.0f;
+bool firstMouse = true;
 
-void mouse_callback(GLFWwindow *window, double xpos, double ypos) {
-    OpenGlCamera *camera = static_cast<OpenGlCamera *>(glfwGetWindowUserPointer(window));
-    if (camera) {
-        camera->mouseCallback(xpos, ypos);
+void mouse_callback(GLFWwindow *window, double _xpos, double _ypos) {
+    float xpos = static_cast<float>(_xpos);
+    float ypos = static_cast<float>(_ypos);
+
+    if (firstMouse) {
+        lastX = xpos;
+        lastY = ypos;
+        firstMouse = false;
     }
+
+    float xOffset = xpos - lastX;
+    float yOffset = lastY - ypos;
+
+    lastX = xpos;
+    lastY = ypos;
+
+    camera.processMouseMovement(xOffset, yOffset);
 }
 
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset) {
-    OpenGlCamera *camera = static_cast<OpenGlCamera *>(glfwGetWindowUserPointer(window));
-    if (camera) {
-        camera->scrollCallback(xoffset, yoffset);
-    }
+    camera.processScroll(static_cast<float>(yoffset));
 }
 
 void processInput(GLFWwindow *window) {
@@ -88,11 +101,8 @@ int main() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    int width = 800, height = 600;
-
-
     // Create GLFW window
-    GLFWwindow *window = glfwCreateWindow(width, height, "Minimal ImGui Example", nullptr, nullptr);
+    GLFWwindow *window = glfwCreateWindow(windowWidth, windowHeight, "Minimal ImGui Example", nullptr, nullptr);
     if (!window) {
         std::cerr << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -211,8 +221,6 @@ int main() {
     shaderProgram.setInt("texture1", 0);
     shaderProgram.setInt("texture2", 1);
 
-    camera.attach(window);
-
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
@@ -232,11 +240,8 @@ int main() {
         faceTexture.use(GL_TEXTURE1);
         shaderProgram.use();
 
-        glm::mat4 projection = glm::mat4(1.0f);
-
         glm::mat4 view = camera.getView();
-
-        projection = glm::perspective(glm::radians(camera.fov), (float) width / (float) height, 0.1f, 100.0f);
+        glm::mat4 projection = camera.getProjection(windowWidth, windowHeight);
 
         shaderProgram.setFloat("mixValue", mixValue);
         shaderProgram.setMat4("view", glm::value_ptr(view));
