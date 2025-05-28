@@ -92,6 +92,14 @@ struct OpenGlProgram {
         glUniform1f(glGetUniformLocation(id, name.c_str()), value);
     }
 
+    void setVec3(const std::string &name, glm::vec3 vec) {
+        setVec3(name, vec.x, vec.y, vec.z);
+    }
+
+    void setVec3(const std::string &name, float x, float y, float z) {
+        glUniform3f(glGetUniformLocation(id, name.c_str()), x, y, z);
+    }
+
     void setMat4(const std::string &name, GLfloat* trans) {
         glUniformMatrix4fv(glGetUniformLocation(id, name.c_str()), 1, GL_FALSE, trans);
     }
