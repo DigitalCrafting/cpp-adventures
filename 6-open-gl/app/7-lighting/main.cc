@@ -161,21 +161,28 @@ int main() {
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     OpenGlProgram shaderProgram{VertexShaderPath.c_str(), FragmentShaderPath.c_str()};
+    OpenGlProgram lightSourceShaderProgram{VertexShaderPath.c_str(), LightSourceFragmentShaderPath.c_str()};
 
-    unsigned int VAO;
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
-
+    unsigned int qubeVAO;
+    glGenVertexArrays(1, &qubeVAO);
+    glBindVertexArray(qubeVAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *) 0);
+    glEnableVertexAttribArray(0);
+
+    unsigned int  lightVAO;
+    glGenVertexArrays(1, &lightVAO);
+    glBindVertexArray(lightVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glEnable(GL_DEPTH_TEST);
 
     glm::vec3 cubePositions = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::vec3 lightPosition = glm::vec3(1.2f, 1.0f, 2.0f);
 
     shaderProgram.use();
     shaderProgram.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
@@ -200,17 +207,23 @@ int main() {
 
         glm::mat4 view = camera.getView();
         glm::mat4 projection = camera.getProjection(windowWidth, windowHeight);
-
-        shaderProgram.setMat4("view", glm::value_ptr(view));
-        shaderProgram.setMat4("projection", glm::value_ptr(projection));
-
-        glBindVertexArray(VAO);
-        glBindVertexArray(VAO);
-
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, cubePositions);
+        shaderProgram.setMat4("view", glm::value_ptr(view));
+        shaderProgram.setMat4("projection", glm::value_ptr(projection));
         shaderProgram.setMat4("model", glm::value_ptr(model));
 
+        glBindVertexArray(qubeVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, lightPosition);
+        model = glm::scale(model, glm::vec3(0.2f));
+        lightSourceShaderProgram.use();
+        lightSourceShaderProgram.setMat4("view", glm::value_ptr(view));
+        lightSourceShaderProgram.setMat4("projection", glm::value_ptr(projection));
+        lightSourceShaderProgram.setMat4("model", glm::value_ptr(model));
+        glBindVertexArray(lightVAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
         glfwSwapBuffers(window);
@@ -218,7 +231,7 @@ int main() {
     }
 
     // Cleanup
-    glDeleteVertexArrays(1, &VAO);
+    glDeleteVertexArrays(1, &qubeVAO);
     glDeleteBuffers(1, &VBO);
 
     shaderProgram.clean();
