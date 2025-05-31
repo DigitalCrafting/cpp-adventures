@@ -1,4 +1,7 @@
 #include <iostream>
+#include <thread>
+#include <chrono>
+#include <unistd.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 
@@ -6,7 +9,6 @@
 
 #include "config.hpp"
 #include "shader.h"
-#include "texture.h"
 #include "camera.h"
 #include "env.h"
 
@@ -27,6 +29,10 @@ OpenGlCamera camera{glm::vec3(0.0f, 0.0f, 3.0f)};
 float lastX = windowWidth / 2.0f;
 float lastY = windowHeight / 2.0f;
 bool firstMouse = true;
+
+const int targetFPS = 60;
+const int frameDelayMs = 1000 / targetFPS;
+const auto targetFrameTime = std::chrono::milliseconds(1000 / targetFPS);
 
 void mouse_callback(GLFWwindow *window, double _xpos, double _ypos) {
     float xpos = static_cast<float>(_xpos);
@@ -87,6 +93,7 @@ int main() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_DOUBLEBUFFER, GL_TRUE);
 
     // Create GLFW window
     GLFWwindow *window = glfwCreateWindow(windowWidth, windowHeight, "Minimal ImGui Example", nullptr, nullptr);
@@ -157,7 +164,7 @@ int main() {
 
     unsigned int VBO;
     glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, 1);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     OpenGlProgram shaderProgram{VertexShaderPath.c_str(), FragmentShaderPath.c_str()};
@@ -167,7 +174,6 @@ int main() {
     glGenVertexArrays(1, &qubeVAO);
     glBindVertexArray(qubeVAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *) 0);
     glEnableVertexAttribArray(0);
 
@@ -192,14 +198,14 @@ int main() {
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
 
+    auto lastFrameTime = std::chrono::high_resolution_clock::now();
+
     while (!glfwWindowShouldClose(window)) {
-        float currentFrame = glfwGetTime();
-        deltaTime = currentFrame - lastFrame;
-        lastFrame = currentFrame;
+        auto frameStart = std::chrono::high_resolution_clock::now();
+        deltaTime = std::chrono::duration<float>(frameStart - lastFrameTime).count();
+        lastFrameTime = frameStart;
 
         processInput(window);
-
-        // Start ImGui frame
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f); // Clear background
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -228,6 +234,13 @@ int main() {
 
         glfwSwapBuffers(window);
         glfwPollEvents();
+
+        // FPS cap
+        auto frameEnd = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<float> frameDuration = frameEnd - frameStart;
+        if (frameDuration < targetFrameTime) {
+            std::this_thread::sleep_for(targetFrameTime - frameDuration);
+        }
     }
 
     // Cleanup
