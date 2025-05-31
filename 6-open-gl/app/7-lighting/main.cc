@@ -1,7 +1,5 @@
 #include <iostream>
 #include <thread>
-#include <chrono>
-#include <unistd.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 
@@ -23,7 +21,6 @@ void glfw_error_callback(int error, const char *description) {
 int windowWidth = 800, windowHeight = 600;
 
 static float deltaTime = 0.0f;
-static float lastFrame = 0.0f;
 
 OpenGlCamera camera{glm::vec3(0.0f, 0.0f, 3.0f)};
 float lastX = windowWidth / 2.0f;
