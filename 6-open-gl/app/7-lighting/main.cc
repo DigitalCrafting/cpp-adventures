@@ -28,7 +28,6 @@ float lastY = windowHeight / 2.0f;
 bool firstMouse = true;
 
 const int targetFPS = 60;
-const int frameDelayMs = 1000 / targetFPS;
 const auto targetFrameTime = std::chrono::milliseconds(1000 / targetFPS);
 
 void mouse_callback(GLFWwindow *window, double _xpos, double _ypos) {
