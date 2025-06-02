@@ -172,6 +172,8 @@ int main() {
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *) 0);
     glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *) (3* sizeof(float)));
+    glEnableVertexAttribArray(1);
 
     unsigned int  lightVAO;
     glGenVertexArrays(1, &lightVAO);
@@ -214,6 +216,7 @@ int main() {
         shaderProgram.setMat4("view", glm::value_ptr(view));
         shaderProgram.setMat4("projection", glm::value_ptr(projection));
         shaderProgram.setMat4("model", glm::value_ptr(model));
+        shaderProgram.setVec3("lightPos", lightPosition);
 
         glBindVertexArray(qubeVAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);
