@@ -204,7 +204,7 @@ int main() {
         lastFrameTime = frameStart;
 
         processInput(window);
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f); // Clear background
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Clear background
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         shaderProgram.use();
@@ -217,6 +217,7 @@ int main() {
         shaderProgram.setMat4("projection", glm::value_ptr(projection));
         shaderProgram.setMat4("model", glm::value_ptr(model));
         shaderProgram.setVec3("lightPos", lightPosition);
+        shaderProgram.setVec3("viewPos", camera.position);
 
         glBindVertexArray(qubeVAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);
