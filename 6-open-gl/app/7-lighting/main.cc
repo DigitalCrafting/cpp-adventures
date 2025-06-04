@@ -223,6 +223,10 @@ int main() {
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
         model = glm::mat4(1.0f);
+
+        lightPosition.x = 1.0f + sin(glfwGetTime()) * 2.0f;
+        lightPosition.y = sin(glfwGetTime() / 2.0f) * 1.0f;
+
         model = glm::translate(model, lightPosition);
         model = glm::scale(model, glm::vec3(0.2f));
         lightSourceShaderProgram.use();
