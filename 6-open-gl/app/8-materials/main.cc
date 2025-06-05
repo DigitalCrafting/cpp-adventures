@@ -58,11 +58,17 @@ void processInput(GLFWwindow *window) {
         glfwSetWindowShouldClose(window, true);
     }
 
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
         camera.moveCamera(MovementDirection::MOVE_UP, deltaTime);
     }
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+    if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
         camera.moveCamera(MovementDirection::MOVE_DOWN, deltaTime);
+    }
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+        camera.moveCamera(MovementDirection::MOVE_FORWARD, deltaTime);
+    }
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+        camera.moveCamera(MovementDirection::MOVE_BACKWARD, deltaTime);
     }
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
         camera.moveCamera(MovementDirection::MOVE_LEFT, deltaTime);

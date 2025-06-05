@@ -8,6 +8,8 @@
 enum MovementDirection {
     MOVE_UP,
     MOVE_DOWN,
+    MOVE_FORWARD,
+    MOVE_BACKWARD,
     MOVE_LEFT,
     MOVE_RIGHT,
 };
@@ -53,9 +55,15 @@ struct OpenGlCamera {
     void moveCamera(MovementDirection direction, float deltaTime) {
         const float velocity = movementSpeed * deltaTime;
         if (direction == MovementDirection::MOVE_UP) {
-            position += front * velocity;
+            position += up * velocity;
         }
         if (direction == MovementDirection::MOVE_DOWN) {
+            position -= up * velocity;
+        }
+        if (direction == MovementDirection::MOVE_FORWARD) {
+            position += front * velocity;
+        }
+        if (direction == MovementDirection::MOVE_BACKWARD) {
             position -= front * velocity;
         }
         if (direction == MovementDirection::MOVE_LEFT) {
