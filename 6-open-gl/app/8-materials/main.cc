@@ -204,6 +204,11 @@ int main() {
 
     auto lastFrameTime = std::chrono::high_resolution_clock::now();
 
+    shaderProgram.setVec3("material.ambient", 1.0f, 0.5f, 0.31f);
+    shaderProgram.setVec3("material.diffuse", 1.0f, 0.5f, 0.31f);
+    shaderProgram.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
+    shaderProgram.setFloat("material.shininess", 32.0f);
+
     while (!glfwWindowShouldClose(window)) {
         auto frameStart = std::chrono::high_resolution_clock::now();
         deltaTime = std::chrono::duration<float>(frameStart - lastFrameTime).count();
