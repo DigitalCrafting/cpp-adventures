@@ -195,8 +195,8 @@ int main() {
     glm::vec3 lightPosition = glm::vec3(1.2f, 1.0f, 2.0f);
 
     shaderProgram.use();
-    shaderProgram.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
-    shaderProgram.setVec3("lightColor",  1.0f, 1.0f, 1.0f);
+//    shaderProgram.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
+//    shaderProgram.setVec3("lightColor",  1.0f, 1.0f, 1.0f);
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetCursorPosCallback(window, mouse_callback);
@@ -208,6 +208,10 @@ int main() {
     shaderProgram.setVec3("material.diffuse", 1.0f, 0.5f, 0.31f);
     shaderProgram.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
     shaderProgram.setFloat("material.shininess", 32.0f);
+
+    shaderProgram.setVec3("light.ambient",  0.2f, 0.2f, 0.2f);
+    shaderProgram.setVec3("light.diffuse",  0.5f, 0.5f, 0.5f); // darken diffuse light a bit
+    shaderProgram.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
 
     while (!glfwWindowShouldClose(window)) {
         auto frameStart = std::chrono::high_resolution_clock::now();
